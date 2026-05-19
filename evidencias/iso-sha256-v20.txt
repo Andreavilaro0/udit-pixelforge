@@ -1,0 +1,1 @@
+3f8a04a8f1fe6ae5e9962cf555108c669fc7b95f2a28f1aaa97148ef384e612f  /home/parallels/Desktop/os_practica/debian-udit-pixelart-arm64-v20-final.iso

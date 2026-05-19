@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=UDIT Pixel Art
+Description=Custom pixel art theme for Debian UDIT Edition by Andrea & Ivan
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/udit-pixelart
+ScriptFile=/usr/share/plymouth/themes/udit-pixelart/udit-pixelart.script

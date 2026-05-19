@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=PixelForge OS
+Description=PixelForge OS boot splash - pixelart style
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/pixelforge
+ScriptFile=/usr/share/plymouth/themes/pixelforge/pixelforge.script

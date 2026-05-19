@@ -1,0 +1,45 @@
+# ISOs — demasiado grandes para git (>1 GB)
+*.iso
+*.img
+
+# Directorios de trabajo del build (rootfs extraídos, temporales)
+work/
+sq/
+rootfs/
+mnt/
+
+# Archivos temporales macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs de build
+*.log
+build.log
+
+# Archivos parciales / descargas incompletas
+*.gHQ2Rl
+*.part
+*.tmp
+
+# Archivos raw de QEMU (framebuffer PPM y logs de salida)
+*.ppm
+evidencias/qemu/run/qemu.out
+evidencias/qemu/run/*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# zip de la guía del profe (material del curso, no nuestro)
+NuevaGuia.zip
+NuevaGuia_extracted/
+manual_paso\ a\ paso.zip
+manual_extract/
+
+# PDF de evaluación (documento del profesor)
+Ver\ evaluación.pdf
+
+# Reportes internos de iteración UX (notas de trabajo)
+V20-ROBOMENU-UX-REPORT.md

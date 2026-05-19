@@ -1,0 +1,31 @@
+bg_image = Image("boot.png");
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+resized_bg = bg_image.Scale(screen_width, screen_height);
+
+bg_sprite = Sprite(resized_bg);
+bg_sprite.SetX(0);
+bg_sprite.SetY(0);
+bg_sprite.SetZ(-100);
+
+bar_fg = Image("progress_fg.png");
+progress_sprite = Sprite();
+progress_sprite.SetPosition(screen_width * 0.25, screen_height * 0.85, 1);
+
+fun boot_progress_cb(time, progress) {
+    bar_width = screen_width * 0.5 * progress;
+    if (bar_width > 1) {
+        scaled_bar = bar_fg.Scale(bar_width, 20);
+        progress_sprite.SetImage(scaled_bar);
+    }
+}
+
+Plymouth.SetBootProgressFunction(boot_progress_cb);
+
+fun quit_cb() {
+    shutdown_image = Image("shutdown.png");
+    resized_sd = shutdown_image.Scale(screen_width, screen_height);
+    bg_sprite.SetImage(resized_sd);
+}
+
+Plymouth.SetQuitFunction(quit_cb);

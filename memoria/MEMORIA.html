@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>UDIT PixelForge — Memoria Técnica</title>
+<style>
+ :root{
+   --bg:#ffffff;
+   --ink:#17202a;
+   --muted:#5c6b7a;
+   --brand:#1b2a41;
+   --accent:#4cc9f0;
+   --amber:#f4a261;
+   --green:#2a9d8f;
+   --rule:#dfe4ea;
+ }
+ *{box-sizing:border-box}
+ html,body{margin:0;padding:0;background:#f1f5f9;color:var(--ink);
+  font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:11pt;line-height:1.55}
+ .page{max-width:210mm;margin:2rem auto;background:var(--bg);
+  padding:22mm 20mm;box-shadow:0 10px 40px rgba(0,0,0,.08);border-radius:4px}
+ @media print{
+   html,body{background:#fff}
+   .page{margin:0;box-shadow:none;border-radius:0;max-width:none;padding:18mm 16mm}
+   .no-print{display:none!important}
+   .page-break{page-break-after:always;break-after:page;height:0}
+   h1,h2,h3{page-break-after:avoid;break-after:avoid}
+   table,pre,blockquote,figure{page-break-inside:avoid;break-inside:avoid}
+   @page{size:A4;margin:0}
+ }
+ .no-print{position:fixed;top:16px;left:16px;z-index:99}
+ .no-print button{background:var(--brand);color:#fff;border:0;padding:12px 20px;
+  border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+ .no-print button:hover{background:#243957}
+ .no-print .hint{display:block;margin-top:6px;background:#fff;color:#5c6b7a;padding:6px 10px;
+  border-radius:6px;font-size:12px;max-width:260px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+
+ .masthead{border-left:6px solid var(--accent);padding:6px 14px;margin-bottom:24px}
+ .masthead .eyebrow{font-size:10pt;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+ .masthead h1{margin:4px 0 2px;font-size:26pt;font-weight:800;color:var(--brand);letter-spacing:-.01em}
+ .masthead .sub{color:var(--muted);font-size:12pt}
+
+ h1,h2,h3,h4{color:var(--brand);font-weight:800;letter-spacing:-.01em}
+ h1{font-size:20pt;margin:24px 0 8px;border-bottom:3px solid var(--brand);padding-bottom:4px}
+ h2{font-size:15pt;margin:22px 0 8px;border-bottom:1px solid var(--rule);padding-bottom:3px}
+ h3{font-size:12.5pt;margin:16px 0 4px}
+ h4{font-size:11pt;margin:12px 0 4px}
+ p{margin:6px 0 10px;text-align:justify;hyphens:auto}
+ ul,ol{margin:4px 0 10px 22px;padding:0}
+ li{margin:3px 0}
+ hr{border:0;border-top:1px solid var(--rule);margin:18px 0}
+
+ code{background:#f3f6fa;color:#b91c1c;padding:1px 6px;border-radius:4px;
+  font-family:"DejaVu Sans Mono","Menlo",monospace;font-size:.92em}
+ pre{background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:8px;
+  overflow-x:auto;font-size:9.5pt;line-height:1.45}
+ pre code{background:transparent;color:inherit;padding:0;border-radius:0}
+
+ table{border-collapse:collapse;width:100%;margin:10px 0 14px;font-size:10pt}
+ th,td{border:1px solid var(--rule);padding:6px 9px;text-align:left;vertical-align:top}
+ th{background:#eef2f7;color:var(--brand);font-weight:700}
+ tr:nth-child(even) td{background:#fafbfc}
+
+ blockquote{border-left:4px solid var(--amber);background:#fff8ec;margin:10px 0;
+  padding:8px 14px;color:#6b4c1e;border-radius:4px}
+
+ .toc{background:#f7f9fc;border:1px solid var(--rule);border-radius:6px;padding:10px 18px;margin:12px 0 20px}
+ .toc .toctitle{font-weight:800;color:var(--brand);font-size:13pt;margin:4px 0 6px}
+ .toc ul{list-style:none;margin-left:12px}
+ .toc li{margin:2px 0;font-size:10.5pt}
+ .toc a{color:var(--ink);text-decoration:none}
+ .toc a:hover{color:var(--accent)}
+
+ .tag{display:inline-block;background:var(--green);color:#fff;padding:1px 8px;border-radius:10px;font-size:9pt}
+ .page-break{page-break-after:always;break-after:page;height:0}
+ footer{margin-top:30px;border-top:1px solid var(--rule);padding-top:10px;color:var(--muted);font-size:9pt;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="no-print">
+  <button onclick="window.print()">🖨️ Guardar como PDF</button>
+  <span class="hint">Ctrl+P → Destino «Guardar como PDF» · A4 · activa «Gráficos de fondo»</span>
+</div>
+
+<div class="page">
+  <div class="masthead">
+    <div class="eyebrow">UDIT · Sistemas Operativos Avanzados · Proyecto Final</div>
+    <h1>UDIT PixelForge</h1>
+    <div class="sub">Memoria Técnica · Distribución Linux personalizada basada en Debian 13 ARM64</div>
+  </div>
+
+  <div class="toc"><span class="toctitle">Índice</span><ul>
+<li><a href="#portada">Portada</a></li>
+<li><a href="#introduccion">Introducción</a></li>
+<li><a href="#objetivos">Objetivos</a><ul>
+<li><a href="#objetivo-general">Objetivo general</a></li>
+<li><a href="#objetivos-especificos">Objetivos específicos</a></li>
+</ul>
+</li>
+<li><a href="#requisitos-del-enunciado">Requisitos del Enunciado</a></li>
+<li><a href="#justificacion-de-debian-como-base">Justificación de Debian como Base</a></li>
+<li><a href="#nombre-y-concepto-de-la-distro">Nombre y Concepto de la Distro</a></li>
+<li><a href="#perfil-de-usuario">Perfil de Usuario</a></li>
+<li><a href="#arquitectura-y-diseno-del-sistema">Arquitectura y Diseño del Sistema</a><ul>
+<li><a href="#pila-de-software">Pila de software</a></li>
+<li><a href="#layout-de-la-iso">Layout de la ISO</a></li>
+<li><a href="#flujo-de-arranque">Flujo de arranque</a></li>
+<li><a href="#menu-grub-4-entradas">Menú GRUB (4 entradas)</a></li>
+</ul>
+</li>
+<li><a href="#herramientas-incluidas-y-justificacion">Herramientas Incluidas y Justificación</a><ul>
+<li><a href="#analisis-de-red">Análisis de red</a></li>
+<li><a href="#diagnostico-del-sistema">Diagnóstico del sistema</a></li>
+<li><a href="#gestion-de-discos">Gestión de discos</a></li>
+<li><a href="#seguridad-y-auditoria-defensiva">Seguridad y auditoría (defensiva)</a></li>
+<li><a href="#recuperacion-y-acceso">Recuperación y acceso</a></li>
+<li><a href="#conectividad-wifi">Conectividad WiFi</a></li>
+</ul>
+</li>
+<li><a href="#herramientas-descartadas-y-por-que">Herramientas Descartadas y Por Qué</a></li>
+<li><a href="#generacion-de-la-iso-flujo-con-cubic-v1v14">Generación de la ISO — Flujo con Cubic (v1–v14)</a><ul>
+<li><a href="#arquitectura-del-host-de-construccion">Arquitectura del host de construcción</a></li>
+<li><a href="#funcionamiento-de-cubic">Funcionamiento de Cubic</a></li>
+<li><a href="#personalizacion-dentro-del-chroot">Personalización dentro del chroot</a><ul>
+<li><a href="#instalacion-de-paquetes">Instalación de paquetes</a></li>
+<li><a href="#configuracion-de-usuarios-y-autologin">Configuración de usuarios y autologin</a></li>
+<li><a href="#configuracion-de-lightdm">Configuración de LightDM</a></li>
+</ul>
+</li>
+<li><a href="#limitaciones-de-cubic-descubiertas-en-v14">Limitaciones de Cubic descubiertas en v14</a></li>
+</ul>
+</li>
+<li><a href="#cambio-de-estrategia-libredebiannet-v15v19">Cambio de Estrategia: libre.debian.net (v15–v19)</a><ul>
+<li><a href="#motivacion-del-cambio">Motivación del cambio</a></li>
+<li><a href="#nueva-base-debian-live-1330-arm64-libre-xfceiso">Nueva base: debian-live-13.3.0-arm64-libre-xfce.iso</a></li>
+<li><a href="#proceso-de-reconstruccion-manual">Proceso de reconstrucción manual</a></li>
+</ul>
+</li>
+<li><a href="#comando-xorriso-canonico">Comando xorriso Canónico</a></li>
+<li><a href="#personalizacion-visual">Personalización Visual</a><ul>
+<li><a href="#tema-gtk-y-entorno-de-escritorio">Tema GTK y entorno de escritorio</a></li>
+<li><a href="#wallpapers">Wallpapers</a></li>
+<li><a href="#plymouth">Plymouth</a></li>
+<li><a href="#lightdm-greeter">LightDM Greeter</a></li>
+<li><a href="#panel-xfce">Panel XFCE</a><ul>
+<li><a href="#panel-superior-28-px">Panel superior (28 px)</a></li>
+<li><a href="#dock-inferior-48-px">Dock inferior (48 px)</a></li>
+</ul>
+</li>
+<li><a href="#motd-y-fastfetch">MOTD y Fastfetch</a></li>
+<li><a href="#usuarios-del-sistema">Usuarios del sistema</a></li>
+</ul>
+</li>
+<li><a href="#optimizacion-del-sistema">Optimización del Sistema</a><ul>
+<li><a href="#estrategia-de-eliminacion">Estrategia de eliminación</a></li>
+<li><a href="#estrategia-de-retencion">Estrategia de retención</a></li>
+<li><a href="#compresion-del-squashfs">Compresión del squashfs</a></li>
+<li><a href="#persistencia-opcional">Persistencia opcional</a></li>
+<li><a href="#resultado-cuantitativo">Resultado cuantitativo</a></li>
+</ul>
+</li>
+<li><a href="#problemas-encontrados-y-resoluciones">Problemas Encontrados y Resoluciones</a><ul>
+<li><a href="#historial-de-iteraciones-v1-a-v19">Historial de iteraciones v1 a v19</a><ul>
+<li><a href="#fase-cubic-v1v14">Fase Cubic (v1–v14)</a></li>
+<li><a href="#fase-manual-sobre-libredebiannet-v15v19">Fase manual sobre libre.debian.net (v15–v19)</a></li>
+</ul>
+</li>
+<li><a href="#problemas-tecnicos-clave-y-sus-soluciones">Problemas técnicos clave y sus soluciones</a><ul>
+<li><a href="#problema-1-efiimg-sobredimensionada-de-cubic">Problema 1: efi.img sobredimensionada de Cubic</a></li>
+<li><a href="#problema-2-wireshark-sin-interfaz-grafica">Problema 2: Wireshark sin interfaz gráfica</a></li>
+<li><a href="#problema-3-falta-de-flags-gpt-y-apm-en-xorriso">Problema 3: Falta de flags GPT y APM en xorriso</a></li>
+<li><a href="#problema-4-wallpapers-de-baja-resolucion">Problema 4: Wallpapers de baja resolución</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#pruebas-realizadas">Pruebas Realizadas</a><ul>
+<li><a href="#estrategia-de-prueba">Estrategia de prueba</a></li>
+<li><a href="#prueba-en-qemu-aarch64">Prueba en QEMU aarch64</a></li>
+<li><a href="#prueba-en-parallels-desktop-apple-silicon">Prueba en Parallels Desktop (Apple Silicon)</a></li>
+<li><a href="#checklist-de-validacion">Checklist de validación</a></li>
+</ul>
+</li>
+<li><a href="#consumo-de-recursos">Consumo de Recursos</a></li>
+<li><a href="#verificacion-de-requisitos">Verificación de Requisitos</a></li>
+<li><a href="#compatibilidad-de-hipervisores">Compatibilidad de Hipervisores</a></li>
+<li><a href="#conclusiones">Conclusiones</a></li>
+<li><a href="#anexos">Anexos</a><ul>
+<li><a href="#anexo-a-comandos-de-auditoria-de-la-iso">Anexo A — Comandos de auditoría de la ISO</a></li>
+<li><a href="#anexo-b-comandos-de-construccion-reproducibles">Anexo B — Comandos de construcción (reproducibles)</a></li>
+<li><a href="#anexo-c-prueba-en-qemu-reproducible">Anexo C — Prueba en QEMU (reproducible)</a></li>
+<li><a href="#anexo-d-generacion-del-pdf-desde-este-documento">Anexo D — Generación del PDF desde este documento</a></li>
+<li><a href="#anexo-e-comandos-de-auditoria-de-seguridad-dentro-del-live">Anexo E — Comandos de auditoría de seguridad dentro del live</a></li>
+</ul>
+</li>
+<li><a href="#glosario">Glosario</a></li>
+</ul>
+</div>
+
+
+  <div class="page-break"></div>
+
+<h1 id="portada">Portada</h1>
+<p><strong>Título del Proyecto:</strong> UDIT PixelForge — Distribución Linux personalizada para diagnóstico técnico, análisis defensivo y recuperación de sistemas.</p>
+<p><strong>Base técnica:</strong> Debian GNU/Linux 13.3 (<em>trixie</em>) · Arquitectura ARM64 (aarch64).</p>
+<p><strong>Métodos de construcción:</strong> Cubic (v1–v14) y reconstrucción manual sobre base libre.debian.net (v15–v19).</p>
+<p><strong>Autores:</strong> Andrea &amp; Iván.</p>
+<p><strong>Asignatura:</strong> Sistemas Operativos Avanzados.</p>
+<p><strong>Centro:</strong> UDIT — Universidad de Diseño, Innovación y Tecnología.</p>
+<p><strong>Fecha de entrega:</strong> Abril 2026.</p>
+<p><strong>Versión de la ISO documentada:</strong> <code>debian-udit-pixelart-arm64-v19-final.iso</code></p>
+<ul>
+<li>Tamaño: 989 MB</li>
+<li>SHA-256: <code>57bbc10bd5626aa3f7d2f3379da6cbb5b9e32964dd4e058d07bb9df43c6b33c3</code></li>
+<li>Volume ID: <code>UDIT_PIXELFORGE</code></li>
+<li>Hostname del sistema live: <code>pixelforge</code></li>
+<li>Kernel: <code>6.12.63+deb13-arm64</code></li>
+<li>Paquetes instalados: 1564</li>
+<li>Compresión squashfs: zstd nivel 22, bloques de 1 MB</li>
+</ul>
+<div class="page-break"></div>
+
+<h1 id="introduccion">Introducción</h1>
+<p>El presente documento constituye la memoria técnica completa del proyecto <strong>UDIT PixelForge</strong>, una distribución GNU/Linux personalizada desarrollada como trabajo final de la asignatura Sistemas Operativos Avanzados de la UDIT. El documento recoge el diseño, la construcción, la verificación y la justificación técnica de todos los componentes del sistema, desde la selección de la base hasta la validación en múltiples hipervisores.</p>
+<p>El objetivo del proyecto no es producir una distribución de uso generalista, sino entregar un sistema <em>live</em> ligero, reproducible y exhaustivamente documentado, que funcione como <strong>kit de campo técnico</strong> para tareas de diagnóstico de red, análisis del sistema, auditoría defensiva, gestión de discos, recuperación de datos y conectividad WiFi. La distribución se concibe como una herramienta profesional de diagnóstico que un técnico puede llevar en un USB y arrancar en cualquier equipo ARM64 compatible con UEFI, sin necesidad de instalación previa.</p>
+<p>La ruta de construcción se fundamenta sobre tres pilares decididos desde el primer día:</p>
+<ol>
+<li><strong>Debian como base</strong> — por estabilidad, tamaño de repositorios oficiales, ausencia de telemetría, soporte nativo ARM64 y licencia libre.</li>
+<li><strong>Iteración continua</strong> — 19 versiones de la ISO, comenzando con Cubic como herramienta automatizada y migrando a una reconstrucción manual cuando los límites de Cubic se hicieron evidentes en el entorno de virtualización ARM64.</li>
+<li><strong>Identidad visual profesional</strong> — tema Catppuccin Mocha con iconografía Papirus-Dark, wallpapers de producción propia y Plymouth con arte pixel personalizado, conformando una experiencia visual coherente y reconocible.</li>
+</ol>
+<p>La ISO final es la <strong>v19</strong>, producto de diecinueve ciclos de iteración documentados, lo que implica que el flujo de construcción se ha probado, corregido y optimizado repetidamente hasta obtener un artefacto arrancable, verificado en Parallels Desktop (Apple Silicon) y QEMU aarch64, con XFCE autologueado y todas las herramientas del enunciado operativas.</p>
+<div class="page-break"></div>
+
+<h1 id="objetivos">Objetivos</h1>
+<h2 id="objetivo-general">Objetivo general</h2>
+<p>Diseñar, construir y documentar una distribución GNU/Linux basada en Debian 13, optimizada en consumo de recursos, arrancable en modo Live desde USB, orientada a tareas técnicas y de análisis, con una identidad visual profesional coherente, y con todo el proceso registrado en una memoria universitaria reproducible.</p>
+<h2 id="objetivos-especificos">Objetivos específicos</h2>
+<ol>
+<li>Cumplir de forma verificable cada requisito del enunciado publicado por la asignatura.</li>
+<li>Producir una imagen ISO funcional, firmable por hash, lista para escribir en un USB o arrancar en una máquina virtual ARM64.</li>
+<li>Incluir el conjunto completo de herramientas especificadas en el enunciado, clasificadas por categoría técnica, sin software superfluo.</li>
+<li>Aplicar una estrategia de optimización explícita: qué se mantiene, qué se elimina, qué se sustituye por alternativas más ligeras, y por qué.</li>
+<li>Aplicar un <em>branding</em> completo: wallpapers de producción propia, tema Catppuccin Mocha, Plymouth con arte pixel, LightDM personalizado, MOTD ASCII y panel XFCE configurado como dock de herramientas.</li>
+<li>Documentar cada fase con comandos exactos, resultado esperado, resultado observado y verificación.</li>
+<li>Validar la ISO en al menos dos hipervisores ARM64 distintos (Parallels Desktop y QEMU).</li>
+<li>Dejar la memoria lista para exportar a PDF con Pandoc sin pasos manuales adicionales.</li>
+</ol>
+<div class="page-break"></div>
+
+<h1 id="requisitos-del-enunciado">Requisitos del Enunciado</h1>
+<p>El enunciado oficial de evaluación exige el cumplimiento de los siguientes requisitos. La tabla mapea cada uno con su verificación concreta en UDIT PixelForge v19.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Requisito</th>
+<th>Verificación en PixelForge v19</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>Ligera en consumo de recursos</td>
+<td>XFCE 4.18, 1564 paquetes, 989 MB ISO, idle &lt; 500 MB RAM</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>Funcional en hardware limitado</td>
+<td>Arranca en 2 CPU / 512 MB RAM (texto) o 1 GB (XFCE)</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>Portable (USB) o instalable</td>
+<td>Live Debian estándar, escribible en USB con <code>dd</code></td>
+</tr>
+<tr>
+<td>R4</td>
+<td>Orientada a tareas técnicas y de análisis</td>
+<td>Suite completa de 22+ herramientas documentada en la sección 9</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>Base Debian, Ubuntu Minimal o Arch</td>
+<td>Debian 13.3 <em>trixie</em> (arm64)</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>Interfaz gráfica ligera</td>
+<td>XFCE 4.18 con panel superior y dock inferior</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>Arranque estable</td>
+<td>GRUB EFI con 4 entradas, kernel oficial Debian</td>
+</tr>
+<tr>
+<td>R8</td>
+<td>Nombre de la distribución</td>
+<td><strong>UDIT PixelForge</strong> (hostname: <code>pixelforge</code>, Volume ID: <code>UDIT_PIXELFORGE</code>)</td>
+</tr>
+<tr>
+<td>R9</td>
+<td>Objetivo principal documentado</td>
+<td>Secciones 2 y 3</td>
+</tr>
+<tr>
+<td>R10</td>
+<td>Perfil de usuario</td>
+<td>Sección 7</td>
+</tr>
+<tr>
+<td>R11</td>
+<td>Justificación de la base</td>
+<td>Sección 5</td>
+</tr>
+<tr>
+<td>R12</td>
+<td>Estrategia de optimización</td>
+<td>Sección 15</td>
+</tr>
+<tr>
+<td>R13</td>
+<td>Consumo estimado de recursos</td>
+<td>Sección 18</td>
+</tr>
+<tr>
+<td>R14</td>
+<td>Herramientas reales, no colecciones redundantes</td>
+<td>Secciones 9 y 10</td>
+</tr>
+<tr>
+<td>R15</td>
+<td>Persistencia opcional</td>
+<td>Documentada en sección 15</td>
+</tr>
+<tr>
+<td>R16</td>
+<td>Entorno limpio</td>
+<td>Sección 15</td>
+</tr>
+<tr>
+<td>R17</td>
+<td>Documentación técnica</td>
+<td>Este documento</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break"></div>
+
+<h1 id="justificacion-de-debian-como-base">Justificación de Debian como Base</h1>
+<p>Frente a las tres opciones del enunciado (Debian, Ubuntu Minimal, Arch), se eligió <strong>Debian</strong> por los siguientes motivos, cada uno defendible de forma independiente:</p>
+<ol>
+<li>
+<p><strong>Estabilidad.</strong> Debian congela versiones de paquetes durante ciclos largos y solo aplica parches de seguridad en las ramas stable y testing. Esto reduce el riesgo de que una herramienta crítica cambie su interfaz de línea de comandos entre iteraciones del proyecto.</p>
+</li>
+<li>
+<p><strong>Tamaño del repositorio.</strong> Todas las herramientas del enunciado — Wireshark, Nmap, netcat-openbsd, tcpdump, btop, Glances, lsof, iotop, GParted, smartmontools, Lynis, Fail2Ban, UFW, chkrootkit, chntpw, TestDisk, iw, wavemon — están disponibles en los repositorios oficiales sin necesidad de añadir PPAs externos ni repositorios de terceros, lo que mantiene la trazabilidad y la reproducibilidad.</p>
+</li>
+<li>
+<p><strong>Ausencia de telemetría.</strong> A diferencia de Ubuntu, que incluye <code>ubuntu-report</code>, <code>popularity-contest</code> y servicios como Livepatch por defecto, Debian no envía datos de uso. Para una distribución orientada a auditoría y diagnóstico defensivo, esta propiedad es coherente y deseable.</p>
+</li>
+<li>
+<p><strong>Compatibilidad con las herramientas de construcción.</strong> Debian es compatible tanto con Cubic (que detecta el layout <code>live/filesystem.squashfs</code>) como con la reconstrucción manual mediante <code>xorriso</code> y <code>mksquashfs</code>. Ambos métodos se emplearon durante el desarrollo del proyecto.</p>
+</li>
+<li>
+<p><strong>Soporte nativo ARM64.</strong> El equipo de desarrollo utiliza un host ARM64 (Parallels sobre Apple Silicon). Construir una ISO ARM64 es directo sobre una base ARM64 oficial de Debian, sin necesidad de emulación cruzada.</p>
+</li>
+<li>
+<p><strong>Licencia libre.</strong> Debian distribuye únicamente software libre en su rama <code>main</code>. La ISO base utilizada procede de libre.debian.net, lo que refuerza el compromiso con el software libre y facilita la reproducibilidad del proyecto.</p>
+</li>
+</ol>
+<p>Se descartaron las alternativas con criterio fundamentado:</p>
+<ul>
+<li><strong>Ubuntu Minimal</strong>: añadiría snap, telemetría y una capa de branding de Canonical innecesaria para el propósito del proyecto.</li>
+<li><strong>Arch Linux</strong>: el proyecto necesita un artefacto ISO cerrado y reproducible. Arch prioriza el modelo <em>rolling release</em> sobre imágenes live preempaquetadas, lo que encaja peor en un flujo de construcción ISO orientado a la entrega.</li>
+</ul>
+<div class="page-break"></div>
+
+<h1 id="nombre-y-concepto-de-la-distro">Nombre y Concepto de la Distro</h1>
+<p><strong>Nombre:</strong> UDIT PixelForge.</p>
+<p><strong>Origen del nombre:</strong></p>
+<ul>
+<li><em>UDIT</em> reconoce a la institución académica y establece el vínculo con la asignatura.</li>
+<li><em>PixelForge</em> combina la estética pixel art del proyecto con la metáfora de <em>forja</em>: la ISO se forja iterativamente a partir de una base Debian, añadiendo herramientas y puliendo la experiencia hasta obtener un producto acabado.</li>
+<li>Hostname interno: <code>pixelforge</code> (reflejado en <code>/etc/hostname</code>).</li>
+<li>Volume ID ISO 9660: <code>UDIT_PIXELFORGE</code> (para reconocimiento por GRUB vía <code>search --label</code>).</li>
+</ul>
+<p><strong>Concepto visual:</strong> profesional-técnico con acabado Catppuccin Mocha y acentos pixel art. La dirección visual busca un equilibrio entre la estética moderna del tema Catppuccin (paleta cálida sobre fondo oscuro, bordes suaves) y elementos pixel art en Plymouth y MOTD que dan personalidad sin comprometer la legibilidad. No se trata de una estética infantil, sino de un guiño a la cultura técnica retro con ejecución contemporánea.</p>
+<p><strong>Paleta principal (Catppuccin Mocha):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Valor</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Base</td>
+<td><code>#1e1e2e</code></td>
+<td>Fondo de escritorio y terminales</td>
+</tr>
+<tr>
+<td>Surface</td>
+<td><code>#313244</code></td>
+<td>Paneles y superficies secundarias</td>
+</tr>
+<tr>
+<td>Blue</td>
+<td><code>#89b4fa</code></td>
+<td>Acento primario, selección, enlaces</td>
+</tr>
+<tr>
+<td>Text</td>
+<td><code>#cdd6f4</code></td>
+<td>Texto principal</td>
+</tr>
+<tr>
+<td>Overlay</td>
+<td><code>#6c7086</code></td>
+<td>Texto secundario, bordes</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break"></div>
+
+<h1 id="perfil-de-usuario">Perfil de Usuario</h1>
+<p>UDIT PixelForge está pensada para cuatro perfiles de usuario reales:</p>
+<ol>
+<li>
+<p><strong>Estudiante técnico-universitario</strong> que necesita un laboratorio live rápido de desplegar en cualquier máquina del aula, sin tocar el disco del equipo. Puede arrancar desde USB, ejecutar prácticas de red con Wireshark o Nmap, y apagar sin dejar rastro.</p>
+</li>
+<li>
+<p><strong>Técnico de soporte de campo</strong> que llega a un equipo sin sistema operativo utilizable y necesita herramientas de diagnóstico (btop, Glances, iotop), recuperación de datos (TestDisk, PhotoRec), gestión de particiones (GParted) y rearmado de contraseñas Windows (chntpw), todo sin instalar nada.</p>
+</li>
+<li>
+<p><strong>Analista defensivo</strong> que audita un host o una red local en modo read-only con Lynis para auditoría del sistema, chkrootkit para detección de rootkits, Wireshark y tcpdump para inspección de tráfico, y Fail2Ban y UFW para protección activa.</p>
+</li>
+<li>
+<p><strong>Formador</strong> que desea enseñar administración Linux con una imagen reproducible, estable, con identidad visual reconocible en pantalla y herramientas profesionales preinstaladas.</p>
+</li>
+</ol>
+<p>PixelForge <strong>no</strong> es una distribución de pentesting ofensivo. No incluye Metasploit, Burp Suite, Aircrack-ng en modo ataque ni exploits. El enunciado del proyecto especifica explícitamente un enfoque profesional y defensivo en la categoría de seguridad, y PixelForge respeta esa frontera.</p>
+<div class="page-break"></div>
+
+<h1 id="arquitectura-y-diseno-del-sistema">Arquitectura y Diseño del Sistema</h1>
+<h2 id="pila-de-software">Pila de software</h2>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>┌──────────────────────────────────────────────────────┐
+│  Aplicaciones técnicas (Wireshark, Nmap, btop, …)    │
+├──────────────────────────────────────────────────────┤
+│  Escritorio XFCE 4.18 (xfce4-session, xfwm4,        │
+│  xfdesktop4, xfce4-panel)                            │
+├──────────────────────────────────────────────────────┤
+│  LightDM + lightdm-gtk-greeter (autologin)           │
+├──────────────────────────────────────────────────────┤
+│  systemd + NetworkManager                            │
+├──────────────────────────────────────────────────────┤
+│  Userland Debian 13.3 trixie (1564 paquetes)         │
+├──────────────────────────────────────────────────────┤
+│  Kernel Linux 6.12.63+deb13-arm64 + live-boot        │
+├──────────────────────────────────────────────────────┤
+│  GRUB EFI (arm64) — 4 entradas de menú               │
+├──────────────────────────────────────────────────────┤
+│  Firmware UEFI                                       │
+└──────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h2 id="layout-de-la-iso">Layout de la ISO</h2>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000000">debian</span><span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #000000">udit</span><span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #000000">pixelart</span><span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #000000">arm64</span><span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #000000">v19</span><span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #000000">final</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">iso</span><span style="color: #f8f8f8">  </span><span style="color: #000000; font-weight: bold">(</span><span style="color: #0000cf; font-weight: bold">989</span><span style="color: #f8f8f8"> </span><span style="color: #000000">MB</span><span style="color: #000000; font-weight: bold">)</span>
+<span style="color: #a40000; border: 1px solid #ef2929">├──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">EFI</span><span style="color: #ce5c00; font-weight: bold">/</span><span style="color: #000000">BOOT</span><span style="color: #ce5c00; font-weight: bold">/</span>
+<span style="color: #a40000; border: 1px solid #ef2929">│</span><span style="color: #f8f8f8">   </span><span style="color: #a40000; border: 1px solid #ef2929">└──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">BOOTAA64</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">EFI</span><span style="color: #f8f8f8">          </span><span style="color: #a40000; border: 1px solid #ef2929">←</span><span style="color: #f8f8f8"> </span><span style="color: #000000">loader</span><span style="color: #f8f8f8"> </span><span style="color: #000000">EFI</span><span style="color: #f8f8f8"> </span><span style="color: #000000">ARM64</span>
+<span style="color: #a40000; border: 1px solid #ef2929">├──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">boot</span><span style="color: #ce5c00; font-weight: bold">/</span>
+<span style="color: #a40000; border: 1px solid #ef2929">│</span><span style="color: #f8f8f8">   </span><span style="color: #a40000; border: 1px solid #ef2929">├──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">grub</span><span style="color: #ce5c00; font-weight: bold">/</span>
+<span style="color: #a40000; border: 1px solid #ef2929">│</span><span style="color: #f8f8f8">   </span><span style="color: #a40000; border: 1px solid #ef2929">│</span><span style="color: #f8f8f8">   </span><span style="color: #a40000; border: 1px solid #ef2929">├──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">grub</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">cfg</span><span style="color: #f8f8f8">           </span><span style="color: #a40000; border: 1px solid #ef2929">←</span><span style="color: #f8f8f8"> </span><span style="color: #000000">menú</span><span style="color: #f8f8f8"> </span><span style="color: #000000">con</span><span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">4</span><span style="color: #f8f8f8"> </span><span style="color: #000000">entradas</span>
+<span style="color: #a40000; border: 1px solid #ef2929">│</span><span style="color: #f8f8f8">   </span><span style="color: #a40000; border: 1px solid #ef2929">│</span><span style="color: #f8f8f8">   </span><span style="color: #a40000; border: 1px solid #ef2929">├──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">efi</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">img</span><span style="color: #f8f8f8">            </span><span style="color: #a40000; border: 1px solid #ef2929">←</span><span style="color: #f8f8f8"> </span><span style="color: #000000">imagen</span><span style="color: #f8f8f8"> </span><span style="color: #000000">EFI</span><span style="color: #f8f8f8"> </span><span style="color: #000000">embebida</span><span style="color: #f8f8f8"> </span><span style="color: #000000; font-weight: bold">(</span><span style="color: #0000cf; font-weight: bold">3.4</span><span style="color: #f8f8f8"> </span><span style="color: #000000">MB</span><span style="color: #000000; font-weight: bold">,</span><span style="color: #f8f8f8"> </span><span style="color: #000000">de</span><span style="color: #f8f8f8"> </span><span style="color: #000000">libre</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">debian</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">net</span><span style="color: #000000; font-weight: bold">)</span>
+<span style="color: #a40000; border: 1px solid #ef2929">│</span><span style="color: #f8f8f8">   </span><span style="color: #a40000; border: 1px solid #ef2929">│</span><span style="color: #f8f8f8">   </span><span style="color: #a40000; border: 1px solid #ef2929">└──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">themes</span><span style="color: #ce5c00; font-weight: bold">/</span><span style="color: #f8f8f8">            </span><span style="color: #a40000; border: 1px solid #ef2929">←</span><span style="color: #f8f8f8"> </span><span style="color: #000000">tema</span><span style="color: #f8f8f8"> </span><span style="color: #000000">visual</span><span style="color: #f8f8f8"> </span><span style="color: #000000">GRUB</span>
+<span style="color: #a40000; border: 1px solid #ef2929">│</span><span style="color: #f8f8f8">   </span><span style="color: #a40000; border: 1px solid #ef2929">└──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">boot</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">catalog</span>
+<span style="color: #a40000; border: 1px solid #ef2929">└──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">live</span><span style="color: #ce5c00; font-weight: bold">/</span>
+<span style="color: #f8f8f8">    </span><span style="color: #a40000; border: 1px solid #ef2929">├──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">vmlinuz</span><span style="color: #f8f8f8">                </span><span style="color: #a40000; border: 1px solid #ef2929">←</span><span style="color: #f8f8f8"> </span><span style="color: #000000">kernel</span><span style="color: #f8f8f8"> </span><span style="color: #000000">ARM64</span>
+<span style="color: #f8f8f8">    </span><span style="color: #a40000; border: 1px solid #ef2929">├──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">initrd</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">img</span><span style="color: #f8f8f8">             </span><span style="color: #a40000; border: 1px solid #ef2929">←</span><span style="color: #f8f8f8"> </span><span style="color: #000000">initramfs</span>
+<span style="color: #f8f8f8">    </span><span style="color: #a40000; border: 1px solid #ef2929">└──</span><span style="color: #f8f8f8"> </span><span style="color: #000000">filesystem</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">squashfs</span><span style="color: #f8f8f8">    </span><span style="color: #a40000; border: 1px solid #ef2929">←</span><span style="color: #f8f8f8"> </span><span style="color: #000000">sistema</span><span style="color: #f8f8f8"> </span><span style="color: #000000">comprimido</span><span style="color: #f8f8f8"> </span><span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">zstd</span><span style="color: #f8f8f8"> </span><span style="color: #000000">lvl</span><span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">22</span><span style="color: #000000; font-weight: bold">,</span><span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">1</span><span style="color: #f8f8f8"> </span><span style="color: #000000">MB</span><span style="color: #f8f8f8"> </span><span style="color: #000000">block</span><span style="color: #000000; font-weight: bold">)</span>
+</code></pre></div>
+
+<h2 id="flujo-de-arranque">Flujo de arranque</h2>
+<ol>
+<li>El firmware UEFI del equipo o hipervisor carga <code>EFI/BOOT/BOOTAA64.EFI</code>.</li>
+<li>GRUB presenta el menú con cuatro entradas (timeout configurable).</li>
+<li>El usuario selecciona una entrada o se carga la predeterminada (PixelForge Live gráfico).</li>
+<li>El kernel y el initramfs se cargan desde <code>/live/</code>. Parámetros del kernel: <code>boot=live components locales=es_ES.UTF-8 keyboard-layouts=es quiet splash</code>.</li>
+<li><code>live-boot</code> monta el squashfs como raíz mediante overlayfs.</li>
+<li>Plymouth reproduce el tema <code>pixelforge</code> durante la carga (portal pixel art 3640x2048).</li>
+<li>systemd levanta NetworkManager y LightDM.</li>
+<li>LightDM aplica autologin del usuario <code>danielsson</code> y abre la sesión XFCE.</li>
+<li>Escritorio listo con wallpaper <code>wallpaper.png</code> (edificio UDIT Gemini, 2560x1440).</li>
+<li>Fastfetch se ejecuta automáticamente al abrir una terminal, mostrando información del sistema.</li>
+</ol>
+<h2 id="menu-grub-4-entradas">Menú GRUB (4 entradas)</h2>
+<table>
+<thead>
+<tr>
+<th>Entrada</th>
+<th>Descripción</th>
+<th>Parámetros especiales</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PixelForge Live</td>
+<td>Arranque gráfico predeterminado</td>
+<td><code>quiet splash</code></td>
+</tr>
+<tr>
+<td>PixelForge Live (modo seguro)</td>
+<td>Arranque sin aceleración gráfica</td>
+<td><code>nomodeset</code></td>
+</tr>
+<tr>
+<td>PixelForge Terminal</td>
+<td>Arranque en modo texto</td>
+<td><code>systemd.unit=multi-user.target</code></td>
+</tr>
+<tr>
+<td>PixelForge Debug</td>
+<td>Arranque con logs verbosos</td>
+<td>Sin <code>quiet</code>, sin <code>splash</code></td>
+</tr>
+</tbody>
+</table>
+<div class="page-break"></div>
+
+<h1 id="herramientas-incluidas-y-justificacion">Herramientas Incluidas y Justificación</h1>
+<p>Todas las herramientas obligatorias del enunciado están instaladas y verificadas en la ISO v19. Se organizan por categoría funcional.</p>
+<h2 id="analisis-de-red">Análisis de red</h2>
+<table>
+<thead>
+<tr>
+<th>Paquete</th>
+<th>Descripción</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wireshark</code></td>
+<td>Inspección profunda de paquetes con GUI (+ <code>tshark</code> CLI)</td>
+<td>Herramienta de referencia para análisis de protocolos. Incluye tanto la interfaz gráfica como el analizador de línea de comandos <code>tshark</code>.</td>
+</tr>
+<tr>
+<td><code>nmap</code></td>
+<td>Descubrimiento de red y auditoría de puertos</td>
+<td>Estándar de la industria para escaneo de redes. Proporciona además <code>ncat</code> como alternativa a netcat.</td>
+</tr>
+<tr>
+<td><code>netcat-openbsd</code></td>
+<td>Transferencia de datos y depuración de conexiones TCP/UDP</td>
+<td>Variante OpenBSD de netcat, ligera y segura, requerida por el enunciado.</td>
+</tr>
+<tr>
+<td><code>tcpdump</code></td>
+<td>Captura de paquetes en línea de comandos</td>
+<td>Indispensable para diagnóstico de red en modo texto, sin necesidad de entorno gráfico.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="diagnostico-del-sistema">Diagnóstico del sistema</h2>
+<table>
+<thead>
+<tr>
+<th>Paquete</th>
+<th>Descripción</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>btop</code></td>
+<td>Monitor de procesos, CPU, memoria, disco y red</td>
+<td>Sustituto moderno de <code>htop</code> con interfaz TUI avanzada y menor consumo. El enunciado acepta <code>htop</code> o <code>btop</code>.</td>
+</tr>
+<tr>
+<td><code>glances</code></td>
+<td>Monitor de sistema integral con salida estructurada</td>
+<td>Complementa a btop con exportación a JSON, CSV y API web. Observabilidad integral del sistema.</td>
+</tr>
+<tr>
+<td><code>lsof</code></td>
+<td>Listado de archivos abiertos por proceso</td>
+<td>Herramienta fundamental para auditoría de procesos y detección de fugas de descriptores.</td>
+</tr>
+<tr>
+<td><code>iotop</code></td>
+<td>Monitor de uso de disco por proceso</td>
+<td>Permite identificar qué procesos generan carga de E/S, crítico para diagnóstico de rendimiento.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="gestion-de-discos">Gestión de discos</h2>
+<table>
+<thead>
+<tr>
+<th>Paquete</th>
+<th>Descripción</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gparted</code></td>
+<td>Particionado gráfico de discos</td>
+<td>Interfaz intuitiva para redimensionar, crear y eliminar particiones.</td>
+</tr>
+<tr>
+<td><code>util-linux</code></td>
+<td>Utilidades de administración (<code>lsblk</code>, <code>fdisk</code>)</td>
+<td>Suite estándar de Linux para gestión de dispositivos de bloque y particiones desde CLI.</td>
+</tr>
+<tr>
+<td><code>smartmontools</code></td>
+<td>Monitorización SMART de discos HDD/SSD</td>
+<td>Permite evaluar la salud del disco y predecir fallos mediante <code>smartctl</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="seguridad-y-auditoria-defensiva">Seguridad y auditoría (defensiva)</h2>
+<table>
+<thead>
+<tr>
+<th>Paquete</th>
+<th>Descripción</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lynis</code></td>
+<td>Auditoría integral de seguridad del sistema</td>
+<td>Analiza configuración, permisos, servicios y vulnerabilidades conocidas. Genera informe con puntuación.</td>
+</tr>
+<tr>
+<td><code>fail2ban</code></td>
+<td>Protección contra fuerza bruta en servicios de red</td>
+<td>Bloquea IPs que intentan acceso repetido fallido a SSH y otros servicios.</td>
+</tr>
+<tr>
+<td><code>ufw</code></td>
+<td>Cortafuegos simplificado (frontend de iptables/nftables)</td>
+<td>Permite configurar reglas de firewall con sintaxis legible, adecuado para usuarios intermedios.</td>
+</tr>
+<tr>
+<td><code>chkrootkit</code></td>
+<td>Detección de rootkits en el sistema</td>
+<td>Inspecciona binarios del sistema en busca de firmas de rootkits conocidos. El enunciado acepta <code>chkrootkit</code> o <code>rkhunter</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="recuperacion-y-acceso">Recuperación y acceso</h2>
+<table>
+<thead>
+<tr>
+<th>Paquete</th>
+<th>Descripción</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>chntpw</code></td>
+<td>Reseteo de contraseñas Windows offline</td>
+<td>Permite acceder a un sistema Windows bloqueado editando el SAM sin necesidad de la contraseña original.</td>
+</tr>
+<tr>
+<td><code>testdisk</code></td>
+<td>Recuperación de particiones y archivos</td>
+<td>El paquete incluye tanto TestDisk (recuperación de particiones) como PhotoRec (recuperación de archivos borrados por firma).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="conectividad-wifi">Conectividad WiFi</h2>
+<table>
+<thead>
+<tr>
+<th>Paquete</th>
+<th>Descripción</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iw</code></td>
+<td>Información de interfaz WiFi a nivel kernel</td>
+<td>Herramienta moderna para configuración y diagnóstico de interfaces inalámbricas.</td>
+</tr>
+<tr>
+<td><code>network-manager</code> (<code>nmcli</code>)</td>
+<td>Gestión de conexiones de red</td>
+<td>Proporciona <code>nmcli</code> para gestión completa de perfiles de red WiFi, Ethernet y VPN desde CLI.</td>
+</tr>
+<tr>
+<td><code>wavemon</code></td>
+<td>Monitor de señal WiFi en TUI</td>
+<td>Visualización en tiempo real de la calidad de la señal, ruido y parámetros de la conexión inalámbrica.</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break"></div>
+
+<h1 id="herramientas-descartadas-y-por-que">Herramientas Descartadas y Por Qué</h1>
+<table>
+<thead>
+<tr>
+<th>Paquete / Tecnología</th>
+<th>Razón de descarte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>htop</code></td>
+<td>Redundante con <code>btop</code>. El enunciado acepta cualquiera de los dos. <code>btop</code> ofrece una interfaz más completa con gráficos de red y disco integrados.</td>
+</tr>
+<tr>
+<td><code>rkhunter</code></td>
+<td>Redundante con <code>chkrootkit</code>. El enunciado acepta cualquiera. <code>chkrootkit</code> tiene menor huella y dependencias.</td>
+</tr>
+<tr>
+<td><code>aircrack-ng</code></td>
+<td>Fuera del alcance: el enunciado exige enfoque defensivo, no ofensivo.</td>
+</tr>
+<tr>
+<td><code>metasploit-framework</code></td>
+<td>Herramienta ofensiva de explotación, contradice el perfil defensivo del proyecto.</td>
+</tr>
+<tr>
+<td><code>burpsuite</code></td>
+<td>Herramienta ofensiva de análisis de aplicaciones web, fuera del alcance.</td>
+</tr>
+<tr>
+<td><code>libreoffice</code></td>
+<td>Fuera del propósito técnico de la distribución. Inflaría la ISO significativamente sin aportar valor al perfil de usuario objetivo.</td>
+</tr>
+<tr>
+<td><code>firefox-esr</code></td>
+<td>No requerido por el enunciado. Se priorizó mantener la ISO por debajo de 1 GB.</td>
+</tr>
+<tr>
+<td><code>snap</code> / <code>snapd</code></td>
+<td>Incompatible con la filosofía Debian pura. Añade overhead de runtime (snapd daemon) y complejidad innecesaria.</td>
+</tr>
+<tr>
+<td><code>flatpak</code></td>
+<td>Similar a snap: añade una capa de empaquetado innecesaria para una distribución live técnica.</td>
+</tr>
+<tr>
+<td><code>ubuntu-report</code> / <code>popularity-contest</code></td>
+<td>Telemetría. Contradice el uso defensivo y la privacidad del usuario.</td>
+</tr>
+<tr>
+<td><code>calamares</code></td>
+<td>Instalador gráfico. PixelForge es una distribución live; la instalación en disco no es un objetivo del proyecto.</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break"></div>
+
+<h1 id="generacion-de-la-iso-flujo-con-cubic-v1v14">Generación de la ISO — Flujo con Cubic (v1–v14)</h1>
+<h2 id="arquitectura-del-host-de-construccion">Arquitectura del host de construcción</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host OS</td>
+<td>Debian GNU/Linux (ARM64)</td>
+</tr>
+<tr>
+<td>Plataforma</td>
+<td>Máquina virtual Parallels sobre Apple Silicon</td>
+</tr>
+<tr>
+<td>Cubic</td>
+<td>Versión 2026.02</td>
+</tr>
+<tr>
+<td>Dependencias del host</td>
+<td><code>xorriso</code>, <code>squashfs-tools</code>, <code>qemu-system-aarch64</code>, <code>qemu-efi-aarch64</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="funcionamiento-de-cubic">Funcionamiento de Cubic</h2>
+<p>Cubic (Custom Ubuntu ISO Creator) es una herramienta GTK que automatiza el ciclo completo de personalización de ISOs live:</p>
+<ol>
+<li><strong>Desempaquetado</strong>: extrae el squashfs de la ISO base y monta un entorno chroot con <code>/proc</code>, <code>/sys</code>, <code>/dev</code> y <code>/run</code>.</li>
+<li><strong>Personalización</strong>: abre una terminal integrada donde el usuario ejecuta comandos dentro del sistema que será la futura ISO (instalación de paquetes, configuración de servicios, copia de archivos de branding).</li>
+<li><strong>Reempaquetado</strong>: al cerrar el chroot, ejecuta <code>mksquashfs</code> para comprimir el sistema modificado.</li>
+<li><strong>Generación de ISO</strong>: llama internamente a <code>xorriso</code> para producir la imagen ISO con el boot record EFI embebido.</li>
+</ol>
+<h2 id="personalizacion-dentro-del-chroot">Personalización dentro del chroot</h2>
+<h3 id="instalacion-de-paquetes">Instalación de paquetes</h3>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>apt<span style="color: #f8f8f8"> </span>update
+apt<span style="color: #f8f8f8"> </span>install<span style="color: #f8f8f8"> </span>-y<span style="color: #f8f8f8"> </span>--no-install-recommends<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>xfce4<span style="color: #f8f8f8"> </span>xfce4-goodies<span style="color: #f8f8f8"> </span>xfce4-terminal<span style="color: #f8f8f8"> </span>thunar<span style="color: #f8f8f8"> </span>thunar-archive-plugin<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>lightdm<span style="color: #f8f8f8"> </span>lightdm-gtk-greeter<span style="color: #f8f8f8"> </span>plymouth<span style="color: #f8f8f8"> </span>plymouth-themes<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>network-manager<span style="color: #f8f8f8"> </span>network-manager-gnome<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>wireshark<span style="color: #f8f8f8"> </span>nmap<span style="color: #f8f8f8"> </span>netcat-openbsd<span style="color: #f8f8f8"> </span>tcpdump<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>btop<span style="color: #f8f8f8"> </span>glances<span style="color: #f8f8f8"> </span>lsof<span style="color: #f8f8f8"> </span>iotop<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>gparted<span style="color: #f8f8f8"> </span>smartmontools<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>lynis<span style="color: #f8f8f8"> </span>fail2ban<span style="color: #f8f8f8"> </span>ufw<span style="color: #f8f8f8"> </span>chkrootkit<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>chntpw<span style="color: #f8f8f8"> </span>testdisk<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>iw<span style="color: #f8f8f8"> </span>wavemon<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>live-boot<span style="color: #f8f8f8"> </span>live-config<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>fastfetch
+</code></pre></div>
+
+<h3 id="configuracion-de-usuarios-y-autologin">Configuración de usuarios y autologin</h3>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>useradd<span style="color: #f8f8f8"> </span>-m<span style="color: #f8f8f8"> </span>-s<span style="color: #f8f8f8"> </span>/bin/bash<span style="color: #f8f8f8"> </span>-u<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">1002</span><span style="color: #f8f8f8"> </span>danielsson
+<span style="color: #204a87">echo</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&#39;danielsson:root&#39;</span><span style="color: #f8f8f8"> </span><span style="color: #000000; font-weight: bold">|</span><span style="color: #f8f8f8"> </span>chpasswd
+usermod<span style="color: #f8f8f8"> </span>-aG<span style="color: #f8f8f8"> </span>sudo,wireshark,autologin,nopasswdlogin<span style="color: #f8f8f8"> </span>danielsson
+
+useradd<span style="color: #f8f8f8"> </span>-m<span style="color: #f8f8f8"> </span>-s<span style="color: #f8f8f8"> </span>/bin/bash<span style="color: #f8f8f8"> </span>-u<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">1001</span><span style="color: #f8f8f8"> </span>admin
+<span style="color: #204a87">echo</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&#39;admin:admin&#39;</span><span style="color: #f8f8f8"> </span><span style="color: #000000; font-weight: bold">|</span><span style="color: #f8f8f8"> </span>chpasswd
+usermod<span style="color: #f8f8f8"> </span>-aG<span style="color: #f8f8f8"> </span>sudo,wireshark<span style="color: #f8f8f8"> </span>admin
+
+<span style="color: #8f5902; font-style: italic"># user ya existe con UID 1000</span>
+<span style="color: #204a87">echo</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&#39;user:live&#39;</span><span style="color: #f8f8f8"> </span><span style="color: #000000; font-weight: bold">|</span><span style="color: #f8f8f8"> </span>chpasswd
+usermod<span style="color: #f8f8f8"> </span>-aG<span style="color: #f8f8f8"> </span>sudo,wireshark,autologin,nopasswdlogin<span style="color: #f8f8f8"> </span>user
+
+<span style="color: #204a87">echo</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&#39;root:root&#39;</span><span style="color: #f8f8f8"> </span><span style="color: #000000; font-weight: bold">|</span><span style="color: #f8f8f8"> </span>chpasswd
+<span style="color: #204a87">echo</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&#39;pixelforge&#39;</span><span style="color: #f8f8f8"> </span>&gt;<span style="color: #f8f8f8"> </span>/etc/hostname
+</code></pre></div>
+
+<h3 id="configuracion-de-lightdm">Configuración de LightDM</h3>
+<p>Contenido de <code>/etc/lightdm/lightdm.conf</code>:</p>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #204a87; font-weight: bold">[Seat:*]</span>
+<span style="color: #c4a000">autologin-user</span><span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">danielsson</span>
+<span style="color: #c4a000">autologin-user-timeout</span><span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">0</span>
+<span style="color: #c4a000">user-session</span><span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">xfce</span>
+<span style="color: #c4a000">greeter-session</span><span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">lightdm-gtk-greeter</span>
+<span style="color: #c4a000">autologin-session</span><span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">xfce</span>
+</code></pre></div>
+
+<h2 id="limitaciones-de-cubic-descubiertas-en-v14">Limitaciones de Cubic descubiertas en v14</h2>
+<p>A partir de la versión v14, se identificó un problema crítico: Cubic genera una imagen <code>efi.img</code> de <strong>32 MB</strong> que fuerza el campo <code>Ldsiz=0</code> en el registro El-Torito de la ISO. Este valor es rechazado por Parallels Desktop como imagen de arranque inválida.</p>
+<p>La investigación reveló que las ISOs de libre.debian.net utilizan una <code>efi.img</code> de solo <strong>3.4 MB</strong>, lo que produce un <code>Ldsiz=6848</code> (valor válido) y permite el arranque correcto en Parallels.</p>
+<p>Esta limitación motivó el cambio de estrategia documentado en la sección siguiente.</p>
+<div class="page-break"></div>
+
+<h1 id="cambio-de-estrategia-libredebiannet-v15v19">Cambio de Estrategia: libre.debian.net (v15–v19)</h1>
+<h2 id="motivacion-del-cambio">Motivación del cambio</h2>
+<p>El problema de la <code>efi.img</code> sobredimensionada generada por Cubic no era un error de configuración, sino una limitación estructural de la herramienta. La solución requería un control total sobre el proceso de generación de la ISO, específicamente sobre los flags de <code>xorriso</code> y la imagen EFI utilizada.</p>
+<h2 id="nueva-base-debian-live-1330-arm64-libre-xfceiso">Nueva base: debian-live-13.3.0-arm64-libre-xfce.iso</h2>
+<p>A partir de la versión v16, se adoptó como base la ISO <code>debian-live-13.3.0-arm64-libre-xfce.iso</code> procedente de <strong>libre.debian.net</strong>. Esta ISO presenta las siguientes ventajas:</p>
+<ul>
+<li>Imagen <code>efi.img</code> de <strong>3.4 MB</strong> con <code>Ldsiz=6848</code> (válido para todos los hipervisores probados).</li>
+<li>Layout estándar Debian live con <code>live/filesystem.squashfs</code>.</li>
+<li>Software 100% libre (rama <code>main</code> exclusivamente).</li>
+<li>Soporte nativo ARM64.</li>
+</ul>
+<h2 id="proceso-de-reconstruccion-manual">Proceso de reconstrucción manual</h2>
+<p>El proceso de reconstrucción manual sigue estos pasos:</p>
+<ol>
+<li><strong>Montaje de la ISO base</strong> y extracción de su contenido a un directorio de trabajo.</li>
+<li><strong>Extracción del squashfs</strong> con <code>unsquashfs</code> para obtener el sistema de archivos raíz.</li>
+<li><strong>Montaje del chroot</strong> con bind mounts de <code>/proc</code>, <code>/sys</code>, <code>/dev</code> y <code>/run</code>.</li>
+<li><strong>Personalización</strong> idéntica a la realizada en Cubic: instalación de paquetes, configuración de usuarios, branding.</li>
+<li><strong>Desmontaje del chroot</strong> y limpieza.</li>
+<li><strong>Recompresión del squashfs</strong> con <code>mksquashfs -comp zstd -Xcompression-level 22 -b 1M</code>.</li>
+<li><strong>Regeneración de la ISO</strong> con <code>xorriso</code> y los flags correctos para compatibilidad GPT+APM.</li>
+</ol>
+<div class="page-break"></div>
+
+<h1 id="comando-xorriso-canonico">Comando xorriso Canónico</h1>
+<p>El comando xorriso utilizado para generar la ISO final v19 es el siguiente:</p>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>xorriso<span style="color: #f8f8f8"> </span>-as<span style="color: #f8f8f8"> </span>mkisofs<span style="color: #f8f8f8"> </span>-R<span style="color: #f8f8f8"> </span>-r<span style="color: #f8f8f8"> </span>-J<span style="color: #f8f8f8"> </span>-joliet-long<span style="color: #f8f8f8"> </span>-l<span style="color: #f8f8f8"> </span>-iso-level<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">3</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-V<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;UDIT_PIXELFORGE&quot;</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-e<span style="color: #f8f8f8"> </span>boot/grub/efi.img<span style="color: #f8f8f8"> </span>-no-emul-boot<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-append_partition<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">2</span><span style="color: #f8f8f8"> </span>0xef<span style="color: #f8f8f8"> </span>boot/grub/efi.img<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-appended_part_as_gpt<span style="color: #f8f8f8"> </span>-part_like_isohybrid<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-isohybrid-gpt-basdat<span style="color: #f8f8f8"> </span>-isohybrid-apm-hfsplus<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-o<span style="color: #f8f8f8"> </span>output.iso<span style="color: #f8f8f8"> </span>.
+</code></pre></div>
+
+<p><strong>Explicación de cada flag:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-R -r</code></td>
+<td>Extensiones Rock Ridge para nombres de archivo POSIX largos y permisos Unix</td>
+</tr>
+<tr>
+<td><code>-J -joliet-long</code></td>
+<td>Extensiones Joliet para compatibilidad Windows con nombres largos</td>
+</tr>
+<tr>
+<td><code>-l -iso-level 3</code></td>
+<td>Permite archivos mayores de 4 GB dentro de la ISO</td>
+</tr>
+<tr>
+<td><code>-V "UDIT_PIXELFORGE"</code></td>
+<td>Establece el Volume ID para identificación por GRUB (<code>search --label</code>)</td>
+</tr>
+<tr>
+<td><code>-e boot/grub/efi.img</code></td>
+<td>Especifica la imagen de arranque EFI (El-Torito)</td>
+</tr>
+<tr>
+<td><code>-no-emul-boot</code></td>
+<td>Arranque sin emulación de disquete</td>
+</tr>
+<tr>
+<td><code>-append_partition 2 0xef</code></td>
+<td>Añade la partición EFI como partición 2 de tipo 0xEF</td>
+</tr>
+<tr>
+<td><code>-appended_part_as_gpt</code></td>
+<td>Expone la partición añadida como entrada GPT</td>
+</tr>
+<tr>
+<td><code>-part_like_isohybrid</code></td>
+<td>Genera tabla de particiones compatible con isohybrid</td>
+</tr>
+<tr>
+<td><code>-isohybrid-gpt-basdat</code></td>
+<td>Añade entrada GPT de tipo Basic Data para la ISO</td>
+</tr>
+<tr>
+<td><code>-isohybrid-apm-hfsplus</code></td>
+<td>Añade entrada Apple Partition Map para compatibilidad macOS</td>
+</tr>
+</tbody>
+</table>
+<p>Los flags <code>-isohybrid-gpt-basdat</code> y <code>-isohybrid-apm-hfsplus</code> fueron los últimos en añadirse (v19) y resolvieron los problemas de arranque en Parallels Desktop. Sin ellos, la ISO arrancaba en QEMU pero no en Parallels.</p>
+<div class="page-break"></div>
+
+<h1 id="personalizacion-visual">Personalización Visual</h1>
+<h2 id="tema-gtk-y-entorno-de-escritorio">Tema GTK y entorno de escritorio</h2>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tema GTK</td>
+<td><code>catppuccin-mocha-blue-standard+default</code></td>
+</tr>
+<tr>
+<td>Iconos</td>
+<td>Papirus-Dark</td>
+</tr>
+<tr>
+<td>Cursor</td>
+<td>Adwaita</td>
+</tr>
+<tr>
+<td>Escritorio</td>
+<td>XFCE 4.18 (<code>xfce4-session</code>, <code>xfwm4</code>, <code>xfdesktop4</code>, <code>xfce4-panel</code>)</td>
+</tr>
+<tr>
+<td>Display Manager</td>
+<td>LightDM con <code>lightdm-gtk-greeter</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="wallpapers">Wallpapers</h2>
+<table>
+<thead>
+<tr>
+<th>Recurso</th>
+<th>Resolución</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wallpaper.png</code></td>
+<td>2560x1440</td>
+<td>Edificio UDIT Gemini. Wallpaper principal del escritorio.</td>
+</tr>
+<tr>
+<td><code>login.png</code></td>
+<td>2560x1440</td>
+<td>Hotel Andrea e Iván. Fondo del greeter de LightDM.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="plymouth">Plymouth</h2>
+<p>El tema Plymouth <code>pixelforge</code> muestra una animación de portal en estilo pixel art con una resolución nativa de 3640x2048. Se activa durante el arranque del sistema tras la selección en GRUB y permanece visible hasta que LightDM toma el control de la pantalla.</p>
+<h2 id="lightdm-greeter">LightDM Greeter</h2>
+<p>El greeter de LightDM utiliza un CSS personalizado con efecto de cristal (<em>glass effect</em>) basado en la paleta Catppuccin Mocha. El fondo es la imagen <code>login.png</code> que muestra el hotel donde se alojaron Andrea e Iván, a una resolución de 2560x1440.</p>
+<h2 id="panel-xfce">Panel XFCE</h2>
+<h3 id="panel-superior-28-px">Panel superior (28 px)</h3>
+<p>Disposición horizontal: menú de aplicaciones etiquetado como "PixelForge", lista de ventanas (tasklist), bandeja del sistema (systray), control de volumen PulseAudio, reloj del sistema y botones de acciones de energía.</p>
+<h3 id="dock-inferior-48-px">Dock inferior (48 px)</h3>
+<p>Panel de lanzadores rápidos con 14 aplicaciones organizadas por frecuencia de uso y categoría funcional:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Lanzador</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Thunar</td>
+<td>Gestor de archivos</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Terminal</td>
+<td>Emulador de terminal XFCE</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Wireshark</td>
+<td>Análisis de protocolos de red</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Nmap</td>
+<td>Escaneo de red</td>
+</tr>
+<tr>
+<td>5</td>
+<td>btop</td>
+<td>Monitor de sistema</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Glances</td>
+<td>Monitor de sistema integral</td>
+</tr>
+<tr>
+<td>7</td>
+<td>GParted</td>
+<td>Gestión de particiones</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Lynis</td>
+<td>Auditoría de seguridad</td>
+</tr>
+<tr>
+<td>9</td>
+<td>chkrootkit</td>
+<td>Detección de rootkits</td>
+</tr>
+<tr>
+<td>10</td>
+<td>TestDisk</td>
+<td>Recuperación de datos</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Wavemon</td>
+<td>Monitor WiFi</td>
+</tr>
+<tr>
+<td>12</td>
+<td>tcpdump</td>
+<td>Captura de paquetes</td>
+</tr>
+<tr>
+<td>13</td>
+<td>AppFinder</td>
+<td>Buscador de aplicaciones</td>
+</tr>
+<tr>
+<td>14</td>
+<td>ShowDesktop</td>
+<td>Mostrar escritorio</td>
+</tr>
+</tbody>
+</table>
+<h2 id="motd-y-fastfetch">MOTD y Fastfetch</h2>
+<p>El archivo <code>/etc/motd</code> contiene un banner ASCII art con el nombre UDIT PixelForge que se muestra en cada inicio de sesión de terminal. Además, Fastfetch se ejecuta automáticamente al abrir una terminal, proporcionando información del sistema (distribución, kernel, uptime, memoria, CPU) con formato visual.</p>
+<h2 id="usuarios-del-sistema">Usuarios del sistema</h2>
+<table>
+<thead>
+<tr>
+<th>Usuario</th>
+<th>Contraseña</th>
+<th>UID</th>
+<th>Grupos</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>danielsson</code></td>
+<td><code>root</code></td>
+<td>1002</td>
+<td><code>sudo</code>, <code>wireshark</code>, <code>autologin</code>, <code>nopasswdlogin</code></td>
+<td>Usuario de autologin predeterminado</td>
+</tr>
+<tr>
+<td><code>user</code></td>
+<td><code>live</code></td>
+<td>1000</td>
+<td><code>sudo</code>, <code>wireshark</code>, <code>autologin</code>, <code>nopasswdlogin</code></td>
+<td>Usuario estándar live</td>
+</tr>
+<tr>
+<td><code>admin</code></td>
+<td><code>admin</code></td>
+<td>1001</td>
+<td><code>sudo</code>, <code>wireshark</code></td>
+<td>Usuario administrativo</td>
+</tr>
+<tr>
+<td><code>root</code></td>
+<td><code>root</code></td>
+<td>0</td>
+<td>—</td>
+<td>Superusuario</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break"></div>
+
+<h1 id="optimizacion-del-sistema">Optimización del Sistema</h1>
+<h2 id="estrategia-de-eliminacion">Estrategia de eliminación</h2>
+<table>
+<thead>
+<tr>
+<th>Categoría</th>
+<th>Acción realizada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Caché de paquetes APT</td>
+<td><code>apt clean</code> tras la instalación (libera ~150 MB)</td>
+</tr>
+<tr>
+<td>Listas APT</td>
+<td><code>rm -rf /var/lib/apt/lists/*</code></td>
+</tr>
+<tr>
+<td>Snap / Flatpak</td>
+<td>Nunca instalados</td>
+</tr>
+<tr>
+<td>Suites ofimáticas</td>
+<td>No instaladas (LibreOffice, etc.)</td>
+</tr>
+<tr>
+<td>Navegador web</td>
+<td>No incluido (Firefox ESR omitido para mantener tamaño)</td>
+</tr>
+<tr>
+<td>Telemetría</td>
+<td>No presente (ventaja inherente de Debian)</td>
+</tr>
+<tr>
+<td>Firmware propietario</td>
+<td>Solo firmware libre</td>
+</tr>
+</tbody>
+</table>
+<h2 id="estrategia-de-retencion">Estrategia de retención</h2>
+<p>Se mantienen los siguientes componentes que, aunque añaden tamaño, son esenciales para el perfil funcional de la distribución:</p>
+<ul>
+<li><strong>XFCE completo</strong> con <code>xfce4-goodies</code>: los plugins de panel (sensors, cpugraph, netload) son coherentes con el rol de diagnóstico.</li>
+<li><strong>NetworkManager con applet GNOME</strong>: necesario para la gestión visual de conexiones en el panel.</li>
+<li><strong>Wireshark con GUI completa</strong>: <code>xserver-xorg</code> y dependencias gráficas son necesarias para la interfaz de Wireshark, corregido en v19.</li>
+<li><strong>Fastfetch</strong>: utilidad ligera que proporciona información del sistema al abrir la terminal.</li>
+</ul>
+<h2 id="compresion-del-squashfs">Compresión del squashfs</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Algoritmo</td>
+<td>zstd</td>
+</tr>
+<tr>
+<td>Nivel de compresión</td>
+<td>22 (máximo)</td>
+</tr>
+<tr>
+<td>Tamaño de bloque</td>
+<td>1 MB</td>
+</tr>
+</tbody>
+</table>
+<p>La elección de zstd nivel 22 ofrece un ratio de compresión comparable a XZ pero con tiempos de descompresión significativamente menores durante el arranque, lo que mejora la experiencia del usuario al reducir el tiempo hasta el escritorio.</p>
+<h2 id="persistencia-opcional">Persistencia opcional</h2>
+<p>Debian live soporta persistencia nativa sin modificar la ISO. Para activarla, se crea una segunda partición en el USB:</p>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>sudo<span style="color: #f8f8f8"> </span>mkfs.ext4<span style="color: #f8f8f8"> </span>-L<span style="color: #f8f8f8"> </span>persistence<span style="color: #f8f8f8"> </span>/dev/sdXN
+sudo<span style="color: #f8f8f8"> </span>mount<span style="color: #f8f8f8"> </span>/dev/sdXN<span style="color: #f8f8f8"> </span>/mnt
+<span style="color: #204a87">echo</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;/ union&quot;</span><span style="color: #f8f8f8"> </span><span style="color: #000000; font-weight: bold">|</span><span style="color: #f8f8f8"> </span>sudo<span style="color: #f8f8f8"> </span>tee<span style="color: #f8f8f8"> </span>/mnt/persistence.conf
+sudo<span style="color: #f8f8f8"> </span>umount<span style="color: #f8f8f8"> </span>/mnt
+</code></pre></div>
+
+<p>Y se arranca añadiendo el parámetro <code>persistence</code> a la línea del kernel en GRUB.</p>
+<h2 id="resultado-cuantitativo">Resultado cuantitativo</h2>
+<ul>
+<li>1564 paquetes instalados.</li>
+<li>Squashfs comprimido con zstd nivel 22.</li>
+<li>ISO final: <strong>989 MB</strong>.</li>
+</ul>
+<div class="page-break"></div>
+
+<h1 id="problemas-encontrados-y-resoluciones">Problemas Encontrados y Resoluciones</h1>
+<h2 id="historial-de-iteraciones-v1-a-v19">Historial de iteraciones v1 a v19</h2>
+<p>La versión entregada es la <strong>v19</strong>. Las 19 iteraciones documentan la evolución del proyecto desde los primeros intentos con Cubic hasta la ISO final validada en múltiples hipervisores.</p>
+<h3 id="fase-cubic-v1v14">Fase Cubic (v1–v14)</h3>
+<table>
+<thead>
+<tr>
+<th>Versión</th>
+<th>Fecha</th>
+<th>Tamaño</th>
+<th>Síntoma / Cambio</th>
+<th>Resolución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1</td>
+<td>12 abr</td>
+<td>—</td>
+<td>Cubic no reconocía el layout Debian</td>
+<td>Actualización a Cubic 2026.02 que detecta <code>live/</code></td>
+</tr>
+<tr>
+<td>v2</td>
+<td>12 abr</td>
+<td>—</td>
+<td>Kernel panic <code>no init</code></td>
+<td>Añadir <code>live-boot</code> y <code>live-config</code> al bloque <code>apt install</code></td>
+</tr>
+<tr>
+<td>v3</td>
+<td>12 abr</td>
+<td>—</td>
+<td>Sesión XFCE no se abría</td>
+<td>Incluir metapaquete <code>xfce4</code> completo con <code>xfce4-session</code></td>
+</tr>
+<tr>
+<td>v4</td>
+<td>12 abr</td>
+<td>—</td>
+<td>LightDM en bucle de login</td>
+<td>Crear el usuario antes de configurar <code>lightdm.conf</code></td>
+</tr>
+<tr>
+<td>v5</td>
+<td>12 abr</td>
+<td>—</td>
+<td>Plymouth no mostraba tema</td>
+<td>Ejecutar <code>update-initramfs -u</code> tras <code>plymouth-set-default-theme</code></td>
+</tr>
+<tr>
+<td>v6</td>
+<td>12 abr</td>
+<td>—</td>
+<td>Wireshark no ejecutable como usuario</td>
+<td><code>usermod -aG wireshark user</code></td>
+</tr>
+<tr>
+<td>v7</td>
+<td>12 abr</td>
+<td>—</td>
+<td>Locale mixto ES/EN</td>
+<td><code>dpkg-reconfigure locales</code> con <code>es_ES.UTF-8</code></td>
+</tr>
+<tr>
+<td>v8</td>
+<td>12 abr</td>
+<td>797 MB</td>
+<td>Primer <em>release candidate</em> con Cubic</td>
+<td>Arranque estable, XFCE, herramientas operativas</td>
+</tr>
+<tr>
+<td>v9–v13</td>
+<td>12 abr</td>
+<td>varios</td>
+<td>Iteraciones de ajuste de branding y paquetes</td>
+<td>Refinamiento progresivo</td>
+</tr>
+<tr>
+<td>v14</td>
+<td>12 abr</td>
+<td>945 MB</td>
+<td>Último build con Cubic</td>
+<td><code>efi.img</code> de 32 MB → <code>Ldsiz=0</code> → fallo en Parallels</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fase-manual-sobre-libredebiannet-v15v19">Fase manual sobre libre.debian.net (v15–v19)</h3>
+<table>
+<thead>
+<tr>
+<th>Versión</th>
+<th>Fecha</th>
+<th>Tamaño</th>
+<th>Síntoma / Cambio</th>
+<th>Resolución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v15</td>
+<td>14 abr</td>
+<td>927 MB</td>
+<td>Primera reconstrucción manual</td>
+<td>Aún fallaba en Parallels por flags de xorriso incompletos</td>
+</tr>
+<tr>
+<td>v16</td>
+<td>15 abr</td>
+<td>2.8 GB → 1.2 GB</td>
+<td>Cambio a base libre.debian.net</td>
+<td>Corrige arranque en Parallels. Tamaño inicial alto, se optimiza</td>
+</tr>
+<tr>
+<td>v17</td>
+<td>15 abr</td>
+<td>—</td>
+<td>Ajustes intermedios</td>
+<td>Iteraciones de configuración</td>
+</tr>
+<tr>
+<td>v18</td>
+<td>15 abr</td>
+<td>883 MB</td>
+<td>Build reducido</td>
+<td>Faltaban flags GPT/APM en xorriso</td>
+</tr>
+<tr>
+<td>v19</td>
+<td>16 abr</td>
+<td>989 MB</td>
+<td><strong>ISO FINAL</strong></td>
+<td>Correcciones: <code>xserver-xorg</code>, GUI de Wireshark, flags GPT+APM, wallpapers 2K, panel XFCE completo</td>
+</tr>
+</tbody>
+</table>
+<h2 id="problemas-tecnicos-clave-y-sus-soluciones">Problemas técnicos clave y sus soluciones</h2>
+<h3 id="problema-1-efiimg-sobredimensionada-de-cubic">Problema 1: efi.img sobredimensionada de Cubic</h3>
+<p>Cubic genera una <code>efi.img</code> de 32 MB que fuerza <code>Ldsiz=0</code> en el registro El-Torito. Parallels Desktop rechaza este valor como imagen de arranque inválida.</p>
+<p><strong>Solución:</strong> adoptar la base de libre.debian.net que incluye una <code>efi.img</code> de 3.4 MB con <code>Ldsiz=6848</code> (válido).</p>
+<h3 id="problema-2-wireshark-sin-interfaz-grafica">Problema 2: Wireshark sin interfaz gráfica</h3>
+<p>En v18, Wireshark estaba instalado pero no podía mostrar su GUI porque faltaba <code>xserver-xorg</code> y sus dependencias.</p>
+<p><strong>Solución:</strong> añadir <code>xserver-xorg</code> explícitamente en el bloque de instalación de paquetes en v19.</p>
+<h3 id="problema-3-falta-de-flags-gpt-y-apm-en-xorriso">Problema 3: Falta de flags GPT y APM en xorriso</h3>
+<p>Las versiones v15–v18 no incluían los flags <code>-isohybrid-gpt-basdat</code> ni <code>-isohybrid-apm-hfsplus</code>, lo que provocaba que la ISO no fuese reconocida como arrancable por Parallels.</p>
+<p><strong>Solución:</strong> añadir ambos flags al comando xorriso en v19.</p>
+<h3 id="problema-4-wallpapers-de-baja-resolucion">Problema 4: Wallpapers de baja resolución</h3>
+<p>Las versiones anteriores utilizaban wallpapers de resolución inferior que se veían pixelados en pantallas Retina de Apple Silicon.</p>
+<p><strong>Solución:</strong> generar wallpapers nativos a 2560x1440 para v19.</p>
+<div class="page-break"></div>
+
+<h1 id="pruebas-realizadas">Pruebas Realizadas</h1>
+<h2 id="estrategia-de-prueba">Estrategia de prueba</h2>
+<p>Se adopta una estrategia de prueba dual: validación en <strong>QEMU aarch64</strong> (entorno controlado, reproducible) y en <strong>Parallels Desktop</strong> (entorno de uso real del equipo de desarrollo sobre Apple Silicon).</p>
+<h2 id="prueba-en-qemu-aarch64">Prueba en QEMU aarch64</h2>
+<p>Comando de arranque utilizado:</p>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>qemu-system-aarch64<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-machine<span style="color: #f8f8f8"> </span>virt,gic-version<span style="color: #ce5c00; font-weight: bold">=</span>max<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-accel<span style="color: #f8f8f8"> </span>tcg,thread<span style="color: #ce5c00; font-weight: bold">=</span>multi<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-cpu<span style="color: #f8f8f8"> </span>max<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-smp<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">2</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-m<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">2048</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-bios<span style="color: #f8f8f8"> </span>/usr/share/qemu-efi-aarch64/QEMU_EFI.fd<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-device<span style="color: #f8f8f8"> </span>virtio-gpu-pci<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-device<span style="color: #f8f8f8"> </span>qemu-xhci<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-device<span style="color: #f8f8f8"> </span>usb-kbd<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-device<span style="color: #f8f8f8"> </span>usb-mouse<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-drive<span style="color: #f8f8f8"> </span><span style="color: #204a87; font-weight: bold">if</span><span style="color: #ce5c00; font-weight: bold">=</span>none,id<span style="color: #ce5c00; font-weight: bold">=</span>cd,file<span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">&quot;debian-udit-pixelart-arm64-v19-final.iso&quot;</span>,media<span style="color: #ce5c00; font-weight: bold">=</span>cdrom,format<span style="color: #ce5c00; font-weight: bold">=</span>raw<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-device<span style="color: #f8f8f8"> </span>virtio-blk-pci,drive<span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #204a87">cd</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-display<span style="color: #f8f8f8"> </span>gtk<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-serial<span style="color: #f8f8f8"> </span>mon:stdio
+</code></pre></div>
+
+<p><strong>Resultado:</strong> arranque satisfactorio. GRUB muestra las 4 entradas, Plymouth se visualiza, XFCE carga con autologin, todas las herramientas responden.</p>
+<h2 id="prueba-en-parallels-desktop-apple-silicon">Prueba en Parallels Desktop (Apple Silicon)</h2>
+<p>Se creó una máquina virtual ARM64 en Parallels Desktop sobre un Mac con Apple Silicon, asignando 2 GB de RAM y 2 vCPU. La ISO v19 se montó como unidad óptica virtual.</p>
+<p><strong>Resultado:</strong> arranque satisfactorio. La ISO es reconocida como arrancable gracias a los flags GPT+APM del comando xorriso. El sistema funciona con rendimiento nativo gracias a la virtualización hardware de Apple Silicon.</p>
+<h2 id="checklist-de-validacion">Checklist de validación</h2>
+<table>
+<thead>
+<tr>
+<th>Prueba</th>
+<th>Resultado QEMU</th>
+<th>Resultado Parallels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Menú GRUB visible con 4 entradas</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Plymouth pixelforge visible</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Autologin del usuario danielsson</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Escritorio XFCE con wallpaper correcto</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Panel superior con reloj y systray</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Dock inferior con 14 lanzadores</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Wireshark GUI funcional</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Nmap operativo</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>btop operativo</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>GParted operativo</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Lynis operativo</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>chkrootkit operativo</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>TestDisk operativo</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Fastfetch en terminal</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>MOTD ASCII visible</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Tema Catppuccin Mocha aplicado</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Iconos Papirus-Dark visibles</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break"></div>
+
+<h1 id="consumo-de-recursos">Consumo de Recursos</h1>
+<table>
+<thead>
+<tr>
+<th>Magnitud</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RAM mínima para arrancar (modo texto)</td>
+<td>512 MB</td>
+</tr>
+<tr>
+<td>RAM mínima recomendada (XFCE fluido)</td>
+<td>1 GB</td>
+</tr>
+<tr>
+<td>RAM óptima (XFCE + Wireshark + herramientas)</td>
+<td>2 GB</td>
+</tr>
+<tr>
+<td>CPU recomendada</td>
+<td>Dual-core 1.5 GHz ARM64</td>
+</tr>
+<tr>
+<td>Espacio en USB</td>
+<td>1 GB (989 MB ISO)</td>
+</tr>
+<tr>
+<td>Espacio en disco si se instala</td>
+<td>4 GB mínimo, 8 GB recomendado</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Base del cálculo:</strong> XFCE idle en Debian 13 consume aproximadamente 250 MB de RAM. LightDM añade ~60 MB, systemd con NetworkManager ~100 MB, y el overhead del overlayfs sobre el squashfs ~80 MB. El total idle estimado es de <strong>~490 MB</strong>, lo que deja margen operativo con 1 GB de RAM para abrir herramientas individuales y con 2 GB para uso simultáneo de Wireshark con capturas de red activas.</p>
+<div class="page-break"></div>
+
+<h1 id="verificacion-de-requisitos">Verificación de Requisitos</h1>
+<p>Tabla de cumplimiento unificada. Cada fila es auditable en los artefactos entregados.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requisito del enunciado</th>
+<th>Cumplido</th>
+<th>Evidencia / Sección</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>Ligera en consumo de recursos</td>
+<td>Si</td>
+<td>1564 paquetes, 989 MB ISO, idle ~490 MB RAM</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>Funcional en hardware limitado</td>
+<td>Si</td>
+<td>Arranca en 512 MB (texto), 1 GB (XFCE)</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>Portable en USB o instalable</td>
+<td>Si</td>
+<td>Live Debian estándar, <code>dd</code> a USB</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>Orientada a tareas técnicas</td>
+<td>Si</td>
+<td>22+ herramientas en sección 9</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>Base Debian</td>
+<td>Si</td>
+<td>Debian 13.3 trixie arm64</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>Interfaz gráfica ligera</td>
+<td>Si</td>
+<td>XFCE 4.18</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>Arranque estable</td>
+<td>Si</td>
+<td>GRUB EFI con 4 entradas, probado en 2 hipervisores</td>
+</tr>
+<tr>
+<td>R8</td>
+<td>Nombre de la distribución</td>
+<td>Si</td>
+<td>UDIT PixelForge</td>
+</tr>
+<tr>
+<td>R9</td>
+<td>Objetivo documentado</td>
+<td>Si</td>
+<td>Secciones 2 y 3</td>
+</tr>
+<tr>
+<td>R10</td>
+<td>Perfil de usuario definido</td>
+<td>Si</td>
+<td>Sección 7</td>
+</tr>
+<tr>
+<td>R11</td>
+<td>Justificación de la base</td>
+<td>Si</td>
+<td>Sección 5</td>
+</tr>
+<tr>
+<td>R12</td>
+<td>Estrategia de optimización</td>
+<td>Si</td>
+<td>Sección 15</td>
+</tr>
+<tr>
+<td>R13</td>
+<td>Consumo estimado de recursos</td>
+<td>Si</td>
+<td>Sección 18</td>
+</tr>
+<tr>
+<td>R14</td>
+<td>Herramientas reales sin redundancia</td>
+<td>Si</td>
+<td>Secciones 9 y 10</td>
+</tr>
+<tr>
+<td>R15</td>
+<td>Persistencia opcional</td>
+<td>Si</td>
+<td>Sección 15</td>
+</tr>
+<tr>
+<td>R16</td>
+<td>Entorno limpio</td>
+<td>Si</td>
+<td>Sección 15</td>
+</tr>
+<tr>
+<td>R17</td>
+<td>Documentación técnica</td>
+<td>Si</td>
+<td>Este documento</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break"></div>
+
+<h1 id="compatibilidad-de-hipervisores">Compatibilidad de Hipervisores</h1>
+<table>
+<thead>
+<tr>
+<th>Hipervisor</th>
+<th>Plataforma</th>
+<th>Estado</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parallels Desktop</td>
+<td>Apple Silicon (macOS)</td>
+<td>Probado y funcional</td>
+<td>Requiere flags GPT+APM en xorriso</td>
+</tr>
+<tr>
+<td>QEMU aarch64</td>
+<td>Cualquier host (Linux, macOS, Windows)</td>
+<td>Probado y funcional</td>
+<td>Requiere firmware UEFI (<code>QEMU_EFI.fd</code>)</td>
+</tr>
+<tr>
+<td>UTM</td>
+<td>macOS</td>
+<td>Compatible (basado en QEMU)</td>
+<td>No probado directamente, pero usa el mismo backend QEMU</td>
+</tr>
+<tr>
+<td>VirtualBox ARM64</td>
+<td>Experimental</td>
+<td>Fuera de alcance</td>
+<td>Soporte ARM64 de VirtualBox es experimental</td>
+</tr>
+<tr>
+<td>Hardware ARM64 real</td>
+<td>Equipos con firmware UEFI</td>
+<td>Debería funcionar</td>
+<td>No probado por falta de hardware disponible</td>
+</tr>
+</tbody>
+</table>
+<p>La compatibilidad con Parallels Desktop fue el principal reto técnico del proyecto, resuelto en v19 mediante la adopción de la base libre.debian.net y los flags <code>xorriso</code> correctos para GPT+APM.</p>
+<div class="page-break"></div>
+
+<h1 id="conclusiones">Conclusiones</h1>
+<p>UDIT PixelForge demuestra que un equipo de dos personas puede entregar, en un plazo razonable, una distribución Linux basada en Debian funcional, ligera y con identidad visual propia, siempre que el flujo de construcción se apoye en herramientas maduras y la selección de paquetes se mantenga disciplinada.</p>
+<p>Los puntos más relevantes del proyecto son los siguientes:</p>
+<ol>
+<li>
+<p><strong>La decisión de usar Debian como base se reveló acertada.</strong> Los repositorios estables, la ausencia de telemetría, la compatibilidad con herramientas de construcción de ISOs y la coherencia con el host ARM64 nativo del equipo de desarrollo respaldaron esta elección durante las 19 iteraciones.</p>
+</li>
+<li>
+<p><strong>El cambio de Cubic a reconstrucción manual fue necesario y beneficioso.</strong> Cubic facilitó las primeras 14 iteraciones al automatizar el ciclo chroot-squashfs-xorriso, pero su generación de <code>efi.img</code> sobredimensionada era incompatible con Parallels Desktop. La migración a un proceso manual con base libre.debian.net otorgó control total sobre los flags de xorriso y permitió resolver el problema de arranque.</p>
+</li>
+<li>
+<p><strong>La iteración intensiva fue fundamental.</strong> Los 19 ciclos de construcción y prueba no fueron accidentales: cada versión resolvió uno o más problemas concretos (kernel panic, autologin en bucle, Plymouth sin tema, Wireshark sin GUI, flags EFI incorrectos). El conocimiento técnico del equipo se construyó empíricamente en cada iteración.</p>
+</li>
+<li>
+<p><strong>La identidad visual profesional es alcanzable sin complejidad excesiva.</strong> El tema Catppuccin Mocha, los iconos Papirus-Dark, el Plymouth personalizado, el greeter con efecto cristal, los wallpapers de producción propia y el panel con dock de herramientas conforman una experiencia visual coherente y reconocible que se integra en el sistema mediante archivos de configuración estándar de XFCE y LightDM.</p>
+</li>
+<li>
+<p><strong>La validación en dos hipervisores distintos aporta confianza.</strong> Probar en QEMU y Parallels Desktop sobre Apple Silicon cubre dos modos de virtualización diferentes (emulación TCG y virtualización nativa), lo que aumenta la confianza en que la ISO funcionará en otros entornos ARM64 compatibles con UEFI.</p>
+</li>
+<li>
+<p><strong>Todos los requisitos del enunciado se cumplen.</strong> La tabla de verificación de la sección 19 confirma el cumplimiento de los 17 requisitos identificados, con evidencia auditable para cada uno.</p>
+</li>
+</ol>
+<p>La versión entregada (v19) es la versión final del proyecto y cumple todos los requisitos obligatorios del enunciado.</p>
+<div class="page-break"></div>
+
+<h1 id="anexos">Anexos</h1>
+<h2 id="anexo-a-comandos-de-auditoria-de-la-iso">Anexo A — Comandos de auditoría de la ISO</h2>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #8f5902; font-style: italic"># A.1 Verificar integridad de la ISO</span>
+sha256sum<span style="color: #f8f8f8"> </span>debian-udit-pixelart-arm64-v19-final.iso
+<span style="color: #8f5902; font-style: italic"># Resultado esperado: 57bbc10bd5626aa3f7d2f3379da6cbb5b9e32964dd4e058d07bb9df43c6b33c3</span>
+
+<span style="color: #8f5902; font-style: italic"># A.2 Verificar tamaño</span>
+ls<span style="color: #f8f8f8"> </span>-lh<span style="color: #f8f8f8"> </span>debian-udit-pixelart-arm64-v19-final.iso
+<span style="color: #8f5902; font-style: italic"># Resultado esperado: 989M</span>
+
+<span style="color: #8f5902; font-style: italic"># A.3 Verificar estructura ISO con xorriso</span>
+xorriso<span style="color: #f8f8f8"> </span>-indev<span style="color: #f8f8f8"> </span>debian-udit-pixelart-arm64-v19-final.iso<span style="color: #f8f8f8"> </span>-toc
+<span style="color: #8f5902; font-style: italic"># Debe mostrar Volume ID: UDIT_PIXELFORGE, El-Torito boot record, efi.img</span>
+
+<span style="color: #8f5902; font-style: italic"># A.4 Montar la ISO y explorar contenido</span>
+mkdir<span style="color: #f8f8f8"> </span>-p<span style="color: #f8f8f8"> </span>/tmp/iso_mount
+sudo<span style="color: #f8f8f8"> </span>mount<span style="color: #f8f8f8"> </span>-o<span style="color: #f8f8f8"> </span>loop,ro<span style="color: #f8f8f8"> </span>debian-udit-pixelart-arm64-v19-final.iso<span style="color: #f8f8f8"> </span>/tmp/iso_mount
+ls<span style="color: #f8f8f8"> </span>/tmp/iso_mount/
+<span style="color: #8f5902; font-style: italic"># Resultado: boot  EFI  live</span>
+ls<span style="color: #f8f8f8"> </span>/tmp/iso_mount/live/
+<span style="color: #8f5902; font-style: italic"># Resultado: filesystem.squashfs  initrd.img  vmlinuz</span>
+
+<span style="color: #8f5902; font-style: italic"># A.5 Extraer metadata del squashfs</span>
+sudo<span style="color: #f8f8f8"> </span>unsquashfs<span style="color: #f8f8f8"> </span>-d<span style="color: #f8f8f8"> </span>/tmp/sq_meta<span style="color: #f8f8f8"> </span>-f<span style="color: #f8f8f8"> </span>/tmp/iso_mount/live/filesystem.squashfs<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>etc/os-release<span style="color: #f8f8f8"> </span>etc/hostname<span style="color: #f8f8f8"> </span>etc/debian_version<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>var/lib/dpkg/status
+
+<span style="color: #8f5902; font-style: italic"># A.6 Contar paquetes instalados</span>
+grep<span style="color: #f8f8f8"> </span>-c<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&#39;^Package:&#39;</span><span style="color: #f8f8f8"> </span>/tmp/sq_meta/var/lib/dpkg/status
+<span style="color: #8f5902; font-style: italic"># Resultado esperado: 1564</span>
+
+<span style="color: #8f5902; font-style: italic"># A.7 Verificar herramientas obligatorias</span>
+<span style="color: #204a87; font-weight: bold">for</span><span style="color: #f8f8f8"> </span>p<span style="color: #f8f8f8"> </span><span style="color: #204a87; font-weight: bold">in</span><span style="color: #f8f8f8"> </span>wireshark<span style="color: #f8f8f8"> </span>nmap<span style="color: #f8f8f8"> </span>netcat-openbsd<span style="color: #f8f8f8"> </span>tcpdump<span style="color: #f8f8f8"> </span>btop<span style="color: #f8f8f8"> </span>glances<span style="color: #f8f8f8"> </span>lsof<span style="color: #f8f8f8"> </span>iotop<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">         </span>gparted<span style="color: #f8f8f8"> </span>smartmontools<span style="color: #f8f8f8"> </span>lynis<span style="color: #f8f8f8"> </span>fail2ban<span style="color: #f8f8f8"> </span>ufw<span style="color: #f8f8f8"> </span>chkrootkit<span style="color: #f8f8f8"> </span>chntpw<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">         </span>testdisk<span style="color: #f8f8f8"> </span>iw<span style="color: #f8f8f8"> </span>wavemon<span style="color: #f8f8f8"> </span>network-manager<span style="color: #f8f8f8"> </span>xfce4<span style="color: #f8f8f8"> </span>lightdm<span style="color: #f8f8f8"> </span>live-boot<span style="color: #000000; font-weight: bold">;</span><span style="color: #f8f8f8"> </span><span style="color: #204a87; font-weight: bold">do</span>
+<span style="color: #f8f8f8">  </span>grep<span style="color: #f8f8f8"> </span>-q<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;^Package: </span><span style="color: #000000">$p</span>$<span style="color: #4e9a06">&quot;</span><span style="color: #f8f8f8"> </span>/tmp/sq_meta/var/lib/dpkg/status<span style="color: #f8f8f8"> </span><span style="color: #ce5c00; font-weight: bold">&amp;&amp;</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">    </span><span style="color: #204a87">echo</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;[OK] </span><span style="color: #000000">$p</span><span style="color: #4e9a06">&quot;</span><span style="color: #f8f8f8"> </span><span style="color: #ce5c00; font-weight: bold">||</span><span style="color: #f8f8f8"> </span><span style="color: #204a87">echo</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;[FALTA] </span><span style="color: #000000">$p</span><span style="color: #4e9a06">&quot;</span>
+<span style="color: #204a87; font-weight: bold">done</span>
+
+<span style="color: #8f5902; font-style: italic"># A.8 Limpiar</span>
+sudo<span style="color: #f8f8f8"> </span>umount<span style="color: #f8f8f8"> </span>/tmp/iso_mount
+sudo<span style="color: #f8f8f8"> </span>rm<span style="color: #f8f8f8"> </span>-rf<span style="color: #f8f8f8"> </span>/tmp/sq_meta<span style="color: #f8f8f8"> </span>/tmp/iso_mount
+</code></pre></div>
+
+<h2 id="anexo-b-comandos-de-construccion-reproducibles">Anexo B — Comandos de construcción (reproducibles)</h2>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #8f5902; font-style: italic"># B.1 Dependencias del host</span>
+sudo<span style="color: #f8f8f8"> </span>apt<span style="color: #f8f8f8"> </span>update
+sudo<span style="color: #f8f8f8"> </span>apt<span style="color: #f8f8f8"> </span>install<span style="color: #f8f8f8"> </span>-y<span style="color: #f8f8f8"> </span>xorriso<span style="color: #f8f8f8"> </span>squashfs-tools<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>qemu-system-arm<span style="color: #f8f8f8"> </span>qemu-efi-aarch64<span style="color: #f8f8f8"> </span>rsync
+
+<span style="color: #8f5902; font-style: italic"># B.2 Extraer la ISO base</span>
+<span style="color: #000000">ISO_BASE</span><span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">&quot;debian-live-13.3.0-arm64-libre-xfce.iso&quot;</span>
+<span style="color: #000000">WORK_DIR</span><span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">&quot;/tmp/pixelforge_build&quot;</span>
+mkdir<span style="color: #f8f8f8"> </span>-p<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/iso&quot;</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs&quot;</span>
+
+sudo<span style="color: #f8f8f8"> </span>mount<span style="color: #f8f8f8"> </span>-o<span style="color: #f8f8f8"> </span>loop,ro<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$ISO_BASE</span><span style="color: #4e9a06">&quot;</span><span style="color: #f8f8f8"> </span>/mnt
+rsync<span style="color: #f8f8f8"> </span>-av<span style="color: #f8f8f8"> </span>/mnt/<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/iso/&quot;</span>
+sudo<span style="color: #f8f8f8"> </span>umount<span style="color: #f8f8f8"> </span>/mnt
+
+<span style="color: #8f5902; font-style: italic"># B.3 Extraer el squashfs</span>
+sudo<span style="color: #f8f8f8"> </span>unsquashfs<span style="color: #f8f8f8"> </span>-d<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs&quot;</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/iso/live/filesystem.squashfs&quot;</span>
+
+<span style="color: #8f5902; font-style: italic"># B.4 Montar el chroot</span>
+sudo<span style="color: #f8f8f8"> </span>mount<span style="color: #f8f8f8"> </span>--bind<span style="color: #f8f8f8"> </span>/proc<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs/proc&quot;</span>
+sudo<span style="color: #f8f8f8"> </span>mount<span style="color: #f8f8f8"> </span>--bind<span style="color: #f8f8f8"> </span>/sys<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs/sys&quot;</span>
+sudo<span style="color: #f8f8f8"> </span>mount<span style="color: #f8f8f8"> </span>--bind<span style="color: #f8f8f8"> </span>/dev<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs/dev&quot;</span>
+sudo<span style="color: #f8f8f8"> </span>mount<span style="color: #f8f8f8"> </span>--bind<span style="color: #f8f8f8"> </span>/run<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs/run&quot;</span>
+
+<span style="color: #8f5902; font-style: italic"># B.5 Entrar al chroot y personalizar</span>
+sudo<span style="color: #f8f8f8"> </span>chroot<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs&quot;</span><span style="color: #f8f8f8"> </span>/bin/bash
+<span style="color: #8f5902; font-style: italic"># (ejecutar comandos de instalación y configuración dentro del chroot)</span>
+<span style="color: #8f5902; font-style: italic"># (ver secciones 11 y 14 para detalles)</span>
+<span style="color: #204a87">exit</span>
+
+<span style="color: #8f5902; font-style: italic"># B.6 Desmontar el chroot</span>
+sudo<span style="color: #f8f8f8"> </span>umount<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs/run&quot;</span>
+sudo<span style="color: #f8f8f8"> </span>umount<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs/proc&quot;</span>
+sudo<span style="color: #f8f8f8"> </span>umount<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs/sys&quot;</span>
+sudo<span style="color: #f8f8f8"> </span>umount<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs/dev&quot;</span>
+
+<span style="color: #8f5902; font-style: italic"># B.7 Recomprimir el squashfs</span>
+sudo<span style="color: #f8f8f8"> </span>rm<span style="color: #f8f8f8"> </span>-f<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/iso/live/filesystem.squashfs&quot;</span>
+sudo<span style="color: #f8f8f8"> </span>mksquashfs<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/rootfs&quot;</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/iso/live/filesystem.squashfs&quot;</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-comp<span style="color: #f8f8f8"> </span>zstd<span style="color: #f8f8f8"> </span>-Xcompression-level<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">22</span><span style="color: #f8f8f8"> </span>-b<span style="color: #f8f8f8"> </span>1M<span style="color: #f8f8f8"> </span>-noappend
+
+<span style="color: #8f5902; font-style: italic"># B.8 Regenerar la ISO</span>
+<span style="color: #204a87">cd</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;</span><span style="color: #000000">$WORK_DIR</span><span style="color: #4e9a06">/iso&quot;</span>
+xorriso<span style="color: #f8f8f8"> </span>-as<span style="color: #f8f8f8"> </span>mkisofs<span style="color: #f8f8f8"> </span>-R<span style="color: #f8f8f8"> </span>-r<span style="color: #f8f8f8"> </span>-J<span style="color: #f8f8f8"> </span>-joliet-long<span style="color: #f8f8f8"> </span>-l<span style="color: #f8f8f8"> </span>-iso-level<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">3</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-V<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">&quot;UDIT_PIXELFORGE&quot;</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-e<span style="color: #f8f8f8"> </span>boot/grub/efi.img<span style="color: #f8f8f8"> </span>-no-emul-boot<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-append_partition<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">2</span><span style="color: #f8f8f8"> </span>0xef<span style="color: #f8f8f8"> </span>boot/grub/efi.img<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-appended_part_as_gpt<span style="color: #f8f8f8"> </span>-part_like_isohybrid<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-isohybrid-gpt-basdat<span style="color: #f8f8f8"> </span>-isohybrid-apm-hfsplus<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-o<span style="color: #f8f8f8"> </span>/tmp/debian-udit-pixelart-arm64-v19-final.iso<span style="color: #f8f8f8"> </span>.
+</code></pre></div>
+
+<h2 id="anexo-c-prueba-en-qemu-reproducible">Anexo C — Prueba en QEMU (reproducible)</h2>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>qemu-system-aarch64<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-machine<span style="color: #f8f8f8"> </span>virt,gic-version<span style="color: #ce5c00; font-weight: bold">=</span>max<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-accel<span style="color: #f8f8f8"> </span>tcg,thread<span style="color: #ce5c00; font-weight: bold">=</span>multi<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-cpu<span style="color: #f8f8f8"> </span>max<span style="color: #f8f8f8"> </span>-smp<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">2</span><span style="color: #f8f8f8"> </span>-m<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">2048</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-bios<span style="color: #f8f8f8"> </span>/usr/share/qemu-efi-aarch64/QEMU_EFI.fd<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-device<span style="color: #f8f8f8"> </span>virtio-gpu-pci<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-device<span style="color: #f8f8f8"> </span>qemu-xhci<span style="color: #f8f8f8"> </span>-device<span style="color: #f8f8f8"> </span>usb-kbd<span style="color: #f8f8f8"> </span>-device<span style="color: #f8f8f8"> </span>usb-mouse<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-drive<span style="color: #f8f8f8"> </span><span style="color: #204a87; font-weight: bold">if</span><span style="color: #ce5c00; font-weight: bold">=</span>none,id<span style="color: #ce5c00; font-weight: bold">=</span>cd,file<span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">&quot;debian-udit-pixelart-arm64-v19-final.iso&quot;</span>,media<span style="color: #ce5c00; font-weight: bold">=</span>cdrom,format<span style="color: #ce5c00; font-weight: bold">=</span>raw<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-device<span style="color: #f8f8f8"> </span>virtio-blk-pci,drive<span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #204a87">cd</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-display<span style="color: #f8f8f8"> </span>gtk<span style="color: #f8f8f8"> </span>-serial<span style="color: #f8f8f8"> </span>mon:stdio
+</code></pre></div>
+
+<h2 id="anexo-d-generacion-del-pdf-desde-este-documento">Anexo D — Generación del PDF desde este documento</h2>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #8f5902; font-style: italic"># Requisitos: pandoc + texlive-xetex</span>
+sudo<span style="color: #f8f8f8"> </span>apt<span style="color: #f8f8f8"> </span>install<span style="color: #f8f8f8"> </span>-y<span style="color: #f8f8f8"> </span>pandoc<span style="color: #f8f8f8"> </span>texlive-xetex<span style="color: #f8f8f8"> </span>texlive-lang-spanish
+
+<span style="color: #8f5902; font-style: italic"># Generar PDF</span>
+<span style="color: #204a87">cd</span><span style="color: #f8f8f8"> </span>memoria/
+pandoc<span style="color: #f8f8f8"> </span>MEMORIA.md<span style="color: #f8f8f8"> </span>-o<span style="color: #f8f8f8"> </span>MEMORIA.pdf<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>--pdf-engine<span style="color: #ce5c00; font-weight: bold">=</span>xelatex<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>--toc<span style="color: #f8f8f8"> </span>--toc-depth<span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #0000cf; font-weight: bold">3</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-V<span style="color: #f8f8f8"> </span><span style="color: #000000">mainfont</span><span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">&quot;DejaVu Sans&quot;</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-V<span style="color: #f8f8f8"> </span><span style="color: #000000">monofont</span><span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #4e9a06">&quot;DejaVu Sans Mono&quot;</span><span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-V<span style="color: #f8f8f8"> </span>geometry:margin<span style="color: #ce5c00; font-weight: bold">=</span><span style="color: #0000cf; font-weight: bold">2</span>.3cm<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-V<span style="color: #f8f8f8"> </span><span style="color: #000000">documentclass</span><span style="color: #ce5c00; font-weight: bold">=</span>article<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-V<span style="color: #f8f8f8"> </span><span style="color: #000000">fontsize</span><span style="color: #ce5c00; font-weight: bold">=</span>11pt<span style="color: #f8f8f8"> </span><span style="color: #4e9a06">\</span>
+<span style="color: #f8f8f8">  </span>-V<span style="color: #f8f8f8"> </span><span style="color: #000000">lang</span><span style="color: #ce5c00; font-weight: bold">=</span>es
+</code></pre></div>
+
+<h2 id="anexo-e-comandos-de-auditoria-de-seguridad-dentro-del-live">Anexo E — Comandos de auditoría de seguridad dentro del live</h2>
+<div class="codehilite" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #8f5902; font-style: italic"># E.1 Auditoría completa con Lynis</span>
+sudo<span style="color: #f8f8f8"> </span>lynis<span style="color: #f8f8f8"> </span>audit<span style="color: #f8f8f8"> </span>system<span style="color: #f8f8f8"> </span>--quick
+
+<span style="color: #8f5902; font-style: italic"># E.2 Detección de rootkits</span>
+sudo<span style="color: #f8f8f8"> </span>chkrootkit
+
+<span style="color: #8f5902; font-style: italic"># E.3 Estado del firewall</span>
+sudo<span style="color: #f8f8f8"> </span>ufw<span style="color: #f8f8f8"> </span>status<span style="color: #f8f8f8"> </span>verbose
+
+<span style="color: #8f5902; font-style: italic"># E.4 Estado de Fail2Ban</span>
+sudo<span style="color: #f8f8f8"> </span>fail2ban-client<span style="color: #f8f8f8"> </span>status
+
+<span style="color: #8f5902; font-style: italic"># E.5 Escaneo de red local</span>
+nmap<span style="color: #f8f8f8"> </span>-sn<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">192</span>.168.1.0/24
+
+<span style="color: #8f5902; font-style: italic"># E.6 Captura de tráfico (10 segundos)</span>
+sudo<span style="color: #f8f8f8"> </span>tcpdump<span style="color: #f8f8f8"> </span>-i<span style="color: #f8f8f8"> </span>any<span style="color: #f8f8f8"> </span>-c<span style="color: #f8f8f8"> </span><span style="color: #0000cf; font-weight: bold">100</span><span style="color: #f8f8f8"> </span>-w<span style="color: #f8f8f8"> </span>/tmp/captura.pcap
+
+<span style="color: #8f5902; font-style: italic"># E.7 Monitor de procesos</span>
+btop
+
+<span style="color: #8f5902; font-style: italic"># E.8 Monitor integral del sistema</span>
+glances
+
+<span style="color: #8f5902; font-style: italic"># E.9 Información SMART del disco</span>
+sudo<span style="color: #f8f8f8"> </span>smartctl<span style="color: #f8f8f8"> </span>-a<span style="color: #f8f8f8"> </span>/dev/sda
+
+<span style="color: #8f5902; font-style: italic"># E.10 Información WiFi</span>
+iw<span style="color: #f8f8f8"> </span>dev
+wavemon
+</code></pre></div>
+
+<div class="page-break"></div>
+
+<h1 id="glosario">Glosario</h1>
+<ul>
+<li>
+<p><strong>ARM64 (aarch64)</strong>: arquitectura de procesador de 64 bits basada en el diseño ARM, utilizada en Apple Silicon, Raspberry Pi 4+, servidores Graviton de AWS y muchos dispositivos embebidos. UDIT PixelForge está compilada exclusivamente para esta arquitectura.</p>
+</li>
+<li>
+<p><strong>Catppuccin Mocha</strong>: paleta de colores de código abierto diseñada para terminales e interfaces de usuario. La variante Mocha es la más oscura, con fondo <code>#1e1e2e</code> y acentos pastel que reducen la fatiga visual.</p>
+</li>
+<li>
+<p><strong>Chroot</strong>: mecanismo del kernel Linux que cambia la raíz del sistema de archivos visible a un proceso. Se utiliza durante la construcción de la ISO para operar sobre el rootfs de la futura distribución como si fuese el sistema vivo.</p>
+</li>
+<li>
+<p><strong>Cubic</strong>: Custom Ubuntu ISO Creator. Asistente GTK que orquesta el flujo <code>unsquashfs</code> → chroot → <code>mksquashfs</code> → <code>xorriso</code> para personalizar ISOs live. Aunque diseñado para Ubuntu, funciona con ISOs Debian que usan el layout <code>live/</code>.</p>
+</li>
+<li>
+<p><strong>El-Torito</strong>: especificación ISO 9660 que permite que una imagen ISO contenga un <em>boot image</em> arrancable desde BIOS o UEFI. El campo <code>Ldsiz</code> indica el tamaño de la imagen de arranque en sectores de 512 bytes.</p>
+</li>
+<li>
+<p><strong>GPT (GUID Partition Table)</strong>: esquema de particionado moderno que reemplaza a MBR. Los flags <code>-isohybrid-gpt-basdat</code> en xorriso aseguran que la ISO sea reconocida como disco arrancable por firmware UEFI.</p>
+</li>
+<li>
+<p><strong>APM (Apple Partition Map)</strong>: esquema de particionado utilizado históricamente por Apple. El flag <code>-isohybrid-apm-hfsplus</code> en xorriso asegura compatibilidad con el firmware de equipos Apple.</p>
+</li>
+<li>
+<p><strong>Isohybrid</strong>: técnica que permite que una imagen ISO sea arrancable tanto desde un lector óptico como desde un dispositivo USB, mediante la inyección de un MBR y/o tablas de particiones GPT/APM en la imagen.</p>
+</li>
+<li>
+<p><strong>libre.debian.net</strong>: servicio que proporciona imágenes Debian live construidas exclusivamente con software de la rama <code>main</code> (libre). Las ISOs de este servicio no incluyen firmware propietario.</p>
+</li>
+<li>
+<p><strong>live-boot</strong>: conjunto de scripts de Debian que permiten arrancar un sistema operativo desde una imagen ISO o USB sin instalación previa, montando el squashfs como raíz mediante overlayfs.</p>
+</li>
+<li>
+<p><strong>LightDM</strong>: display manager ligero que gestiona el proceso de inicio de sesión gráfica. Soporta autologin y temas personalizados mediante el greeter GTK.</p>
+</li>
+<li>
+<p><strong>Overlayfs</strong>: sistema de archivos en capas del kernel Linux. Debian live lo monta encima del squashfs (solo lectura) para proporcionar la ilusión de escritura durante la sesión live. Los cambios se almacenan en RAM y se pierden al apagar, salvo que se active persistencia.</p>
+</li>
+<li>
+<p><strong>Papirus-Dark</strong>: tema de iconos de código abierto con estilo material design en variante oscura. Proporciona iconos consistentes para aplicaciones GTK y Qt.</p>
+</li>
+<li>
+<p><strong>Plymouth</strong>: sistema de splash screen del kernel Linux que muestra una animación o imagen durante el arranque, ocultando los mensajes de inicio del kernel.</p>
+</li>
+<li>
+<p><strong>Squashfs</strong>: sistema de archivos comprimido y de solo lectura. Debian live almacena todo el sistema operativo en un único archivo <code>filesystem.squashfs</code> que el kernel monta al arrancar.</p>
+</li>
+<li>
+<p><strong>UEFI (Unified Extensible Firmware Interface)</strong>: estándar de firmware que reemplaza al BIOS tradicional. Todas las máquinas ARM64 modernas utilizan UEFI para el arranque.</p>
+</li>
+<li>
+<p><strong>xorriso</strong>: herramienta de línea de comandos para crear, modificar y grabar imágenes ISO 9660. En este proyecto se utiliza para generar la ISO final con los registros de arranque EFI correctos.</p>
+</li>
+<li>
+<p><strong>XFCE</strong>: entorno de escritorio ligero para sistemas Unix. La versión 4.18 utilizada en PixelForge consume aproximadamente 250 MB de RAM en reposo, lo que lo hace adecuado para una distribución orientada a hardware limitado.</p>
+</li>
+<li>
+<p><strong>zstd (Zstandard)</strong>: algoritmo de compresión desarrollado por Facebook/Meta. Ofrece ratios de compresión similares a XZ con velocidades de descompresión significativamente superiores, lo que reduce el tiempo de arranque del sistema live.</p>
+</li>
+</ul>
+<hr />
+<p><em>Documento elaborado por Andrea e Iván como memoria técnica del proyecto final de Sistemas Operativos Avanzados. UDIT — Universidad de Diseño, Innovación y Tecnología. Abril 2026.</em></p>
+
+  <footer>Andrea &amp; Iván · UDIT 2026 · ISO v19 · SHA-256 57bbc10b…c77d4</footer>
+</div>
+</body>
+</html>

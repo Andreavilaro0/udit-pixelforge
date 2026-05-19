@@ -1,0 +1,1 @@
+8d87dcc672f98e5bd629f90d9ee70d9b12ad64996be1cb31e3a0487ca9b90566  debian-udit-pixelart-arm64-v12.iso

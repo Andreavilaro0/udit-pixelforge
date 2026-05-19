@@ -1,0 +1,369 @@
+#!/bin/bash
+# /usr/local/bin/robomenu — PixelForge v20
+# Menu interactivo con imagen pixel art (chafa) + lista (fzf)
+# v2: chafa de alta resolución (sextant) + feedback explícito en cada acción.
+
+ICONS=/usr/share/pixelforge/icons
+TITLE="PixelForge v20"
+
+# === Helpers ===
+
+# Estado global del breadcrumb (lo modifican las funciones menu_*).
+BREADCRUMB="Menú principal"
+
+# Salida directa: para comandos cortos o interactivos.
+# Uso: run "Etiqueta legible" comando arg1 arg2 ...
+run() {
+    local label="$1"; shift
+    clear
+    printf '\033[1;36m>> %s\033[0m   \033[2;37m%s\033[0m\n' "$label" "$BREADCRUMB"
+    printf '\033[2;37m$ \033[0;37m%s\033[0m\n' "$*"
+    printf '\033[2;37m----------------------------------------------------------------------\033[0m\n'
+    local start=$SECONDS
+    "$@"
+    local rc=$? dur=$((SECONDS - start))
+    printf '\033[2;37m----------------------------------------------------------------------\033[0m\n'
+    if [ $rc -eq 0 ]; then
+        printf '\033[1;32m[ok]\033[0m  '
+    else
+        printf '\033[1;31m[error %d]\033[0m  ' "$rc"
+    fi
+    printf '\033[2;37m(%ds)\033[0m\n\n' "$dur"
+    printf '\033[1;33mPulsa Enter para volver al menu...\033[0m'
+    read -r _
+}
+
+# Salida paginada: para comandos que pueden producir mucha salida (nmap, journalctl, etc).
+# less -F sale automaticamente si cabe en una pantalla.
+run_pager() {
+    local label="$1"; shift
+    clear
+    printf '\033[1;36m>> %s\033[0m   \033[2;37m%s\033[0m\n' "$label" "$BREADCRUMB"
+    printf '\033[2;37m$ \033[0;37m%s\033[0m\n' "$*"
+    printf '\033[2;37m---------------------------------------------------------------- (q salir)\033[0m\n'
+    "$@" 2>&1 | less -R -X -F -K
+    printf '\033[2;37m----------------------------------------------------------------------\033[0m\n'
+    printf '\033[1;33mPulsa Enter para volver al menu...\033[0m'
+    read -r _
+}
+
+# Pide un dato al usuario con prompt destacado. Resultado en variable global REPLY_VAR.
+ask() {
+    local prompt="$1"
+    local default="$2"
+    clear
+    printf '\033[1;36m▶ %s\033[0m\n\n' "$prompt"
+    if [ -n "$default" ]; then
+        printf '\033[1;33m> \033[0m'
+        read -r REPLY_VAR
+        [ -z "$REPLY_VAR" ] && REPLY_VAR="$default"
+    else
+        printf '\033[1;33m> \033[0m'
+        read -r REPLY_VAR
+    fi
+}
+
+# Banner ASCII opcional (se muestra como header de fzf).
+banner() {
+    printf '╔══════════════════════════════════════════════════════════════════════════════╗\n'
+    printf '║   ▄▄▄▄  ▄  ▄ ▄ ▄  ▄▄ ▄▄  ▄  ▄▄                                                ║\n'
+    printf '║   PIXELFORGE · UDIT EDITION · v20            %s\n' "$(date +%H:%M:%S)"
+    printf '╚══════════════════════════════════════════════════════════════════════════════╝\n'
+}
+
+# fzf con chafa de alta resolución a la izquierda.
+fzf_menu() {
+    local cat="$1"
+    local default_icon="$2"
+
+    # Imagen adaptativa: usa todo el ancho del preview de fzf menos 2 cols, y deja 5 filas
+    # para la descripcion. Asi el menu siempre tiene sitio aunque la TTY sea estrecha.
+    # Cada item puede traer su propio icono en el campo 4 ("id|label|desc|icon").
+    local preview_cmd="ICON=\$(echo {} | cut -d'|' -f4); [ -z \"\$ICON\" ] && ICON=$default_icon; W=\$((\${FZF_PREVIEW_COLUMNS:-50} - 2)); H=\$((\${FZF_PREVIEW_LINES:-30} - 5)); chafa --size=\${W}x\${H} --symbols=all --colors=truecolor --polite=on --optimize=9 $ICONS/\${ICON}.png 2>/dev/null; echo; printf '\\033[1;33m-- DESCRIPCION --\\033[0m\\n'; echo {} | cut -d'|' -f3"
+
+    local color_spec
+    if [ "${COLORTERM:-}" = "truecolor" ] || [ "${COLORTERM:-}" = "24bit" ]; then
+        color_spec='fg:#e6c89f,bg:-1,hl:#7fc8ff,fg+:#ffffff,bg+:#3a2820,hl+:#7fc8ff,border:#a87844,label:#7fc8ff,header:#ffd27f,prompt:#7fc8ff,pointer:#e74c3c,info:#a87844,separator:#a87844'
+    else
+        color_spec='fg:223,bg:-1,hl:117,fg+:15,bg+:235,hl+:117,border:137,label:117,header:221,prompt:117,pointer:196'
+    fi
+
+    local header
+    header=$(printf 'PIXELFORGE  ·  UDIT EDITION v20\n%s\n  Estas en: %s\n  Flechas ARRIBA/ABAJO para moverte    ENTER para elegir    ESC para volver atras' \
+        "------------------------------------------------" "$BREADCRUMB")
+
+    # Layout adaptativo: si la TTY no es muy ancha, ponemos el preview ARRIBA
+    # (asi el menu siempre ocupa el ancho completo y nunca queda "una letra").
+    # Si es ancha de verdad, va al lado izquierdo (mas bonito).
+    # Deteccion robusta: el menor valor no vacio entre COLUMNS, stty size, tput cols.
+    local pwin
+    local cols_env=${COLUMNS:-0}
+    local cols_stty cols_tput
+    cols_stty=$(stty size 2>/dev/null | awk '{print $2}')
+    cols_tput=$(tput cols 2>/dev/null)
+    local cols=0
+    for c in "$cols_env" "$cols_stty" "$cols_tput"; do
+        [[ "$c" =~ ^[0-9]+$ ]] || continue
+        [ "$c" -eq 0 ] && continue
+        if [ "$cols" -eq 0 ] || [ "$c" -lt "$cols" ]; then
+            cols="$c"
+        fi
+    done
+    [ "$cols" -eq 0 ] && cols=80
+    if [ "$cols" -lt 140 ]; then
+        pwin="top,55%,border-double"
+    else
+        pwin="left,45%,border-double"
+    fi
+
+    fzf --with-nth=2 --delimiter='|' \
+        --preview="$preview_cmd" \
+        --preview-window="$pwin" \
+        --border=double \
+        --border-label="  $cat  " \
+        --border-label-pos=3 \
+        --header="$header" \
+        --header-first \
+        --info=hidden --pointer='>>' --marker='*' \
+        --color="$color_spec" \
+        --prompt='> ' \
+        --height=100% \
+        --layout=reverse
+}
+
+# === MENÚ SEGURIDAD ===
+menu_seguridad() {
+    BREADCRUMB="Menú principal > Seguridad y Redes"
+    local SEL
+    SEL=$(cat <<'EOF' | fzf_menu "Seguridad y Redes" seguridad
+nmap| 1. Escanear una red (nmap)      |Mira que dispositivos hay conectados a una red y que servicios ofrecen. Te va a pedir el rango, por ejemplo 192.168.1.0/24 para tu wifi de casa.
+masscan| 2. Escaneo masivo (masscan)     |Como nmap pero muchisimo mas rapido. Util para escanear miles de IPs. Te pide la red destino.
+nikto-info| 3. Vulnerabilidades web (nikto) |Te explica como instalar nikto, una herramienta para auditar paginas web. No viene preinstalada.
+tshark| 4. Capturar trafico de red      |Graba 50 paquetes que pasan por una interfaz (ej eth0). Como wireshark pero en consola.
+aircrack| 5. Auditar wifi (aircrack-ng)   |Suite para analizar redes inalambricas. Necesitas una tarjeta wifi que soporte modo monitor.
+passwd| 6. Cambiar una contrasena       |Cambia la contrasena de un usuario del sistema. Te pide el nombre del usuario.
+hydra| 7. Fuerza bruta de logins       |Prueba muchas contrasenas contra SSH, FTP, HTTP. Te muestra un ejemplo de como usarla.
+john| 8. Crackear hashes (john)       |John the Ripper, descifra hashes de contrasenas. Te enseña los formatos que soporta.
+hashcat| 9. Crackear con GPU (hashcat)   |Mas rapido que john si tienes una GPU. Muestra la ayuda con todas las opciones.
+gobuster|10. Buscar URLs ocultas         |Encuentra directorios y archivos que no aparecen enlazados en una web. Pide URL y lista de palabras.
+whois|11. Ver datos de un dominio     |Quien registro una web, cuando, donde. Solo informacion publica. Pide el dominio.
+logs|12. Ver registros del sistema   |Los ultimos 100 eventos que ha registrado el sistema. Util para ver errores.
+volver|<- Volver al menu principal     |
+EOF
+)
+    [ -z "$SEL" ] && return
+    local ID=$(echo "$SEL" | cut -d'|' -f1)
+
+    case $ID in
+        nmap)
+            ask "Red a escanear (ej 192.168.1.0/24)" ""
+            [ -n "$REPLY_VAR" ] && run_pager "nmap $REPLY_VAR" sudo nmap -sV --open "$REPLY_VAR"
+            ;;
+        masscan)
+            ask "Red" ""
+            [ -n "$REPLY_VAR" ] && run_pager "masscan $REPLY_VAR" sudo masscan "$REPLY_VAR" -p1-65535 --rate=1000
+            ;;
+        nikto-info)
+            run "Instalación de nikto" cat <<'TXT'
+
+nikto no está disponible en los repos de Debian 13. Para instalarlo:
+
+  cd /tmp
+  git clone https://github.com/sullo/nikto.git
+  cd nikto/program
+  ./nikto.pl -h http://target
+
+TXT
+            ;;
+        tshark)
+            ask "Interfaz" "eth0"
+            run "tshark -i $REPLY_VAR (50 paquetes)" sudo tshark -i "$REPLY_VAR" -c 50
+            ;;
+        aircrack)
+            run "Ejemplo aircrack-ng" bash -c 'echo "Suite aircrack-ng instalada. Ejemplo:"; echo "  sudo airmon-ng start wlan0"; echo "  sudo airodump-ng wlan0mon"'
+            ;;
+        passwd)
+            ask "Usuario" "$USER"
+            [ -n "$REPLY_VAR" ] && run "passwd $REPLY_VAR" sudo passwd "$REPLY_VAR"
+            ;;
+        hydra)
+            run "Ejemplo hydra" bash -c 'echo "hydra instalado. Ejemplo:"; echo "  hydra -l admin -P /usr/share/wordlists/rockyou.txt ssh://192.168.1.1"'
+            ;;
+        john)
+            run_pager "john --list=formats" john --list=formats
+            ;;
+        hashcat)
+            run_pager "hashcat --help" hashcat --help
+            ;;
+        gobuster)
+            ask "URL destino" ""
+            if [ -n "$REPLY_VAR" ]; then
+                local URL="$REPLY_VAR"
+                ask "Wordlist" "/usr/share/wordlists/dirb/common.txt"
+                run_pager "gobuster dir -u $URL -w $REPLY_VAR" gobuster dir -u "$URL" -w "$REPLY_VAR"
+            fi
+            ;;
+        whois)
+            ask "Dominio" ""
+            [ -n "$REPLY_VAR" ] && run_pager "whois $REPLY_VAR" whois "$REPLY_VAR"
+            ;;
+        logs)
+            run_pager "journalctl ultimos 100 eventos" journalctl -n 100 --no-pager
+            ;;
+        volver) return ;;
+    esac
+    menu_seguridad
+}
+
+# === MENÚ ROBÓTICA ===
+menu_robotica() {
+    BREADCRUMB="Menú principal > Robótica y Hardware"
+    local SEL
+    SEL=$(cat <<'EOF' | fzf_menu "Robótica y Hardware" robotica
+esptool|1. Detectar chip ESP32/ESP8266 |Identifica que microcontrolador hay conectado al puerto USB. Pide el puerto (por defecto /dev/ttyUSB0).
+avrdude|2. Programador AVR (Arduino)   |Muestra la ayuda completa de avrdude, el programa para grabar firmware en placas Arduino.
+minicom|3. Monitor serie (minicom)     |Programa clasico para "hablar" con un microcontrolador por USB. Tiene menus internos.
+picocom|4. Monitor serie simple        |Igual que minicom pero mas sencillo. Para salir: Ctrl+A y luego Ctrl+X. Pide puerto y velocidad.
+screen|5. Monitor serie (screen)      |Otra alternativa para abrir el puerto serie. Pide puerto y velocidad.
+puertos|6. Que puertos USB hay         |Lista los puertos /dev/ttyUSB* y /dev/ttyACM* conectados. Util para saber cual elegir.
+ssh|7. Conectarme a una Raspberry   |Abre una sesion SSH remota. Te pide la IP de la Pi y el usuario (por defecto pi).
+python|8. Abrir Python                 |Abre el interprete interactivo de Python 3. Para salir: exit() o Ctrl+D.
+pip|9. Instalar libreria Python      |Instala una libreria de Python (pip3 install). Solo dura mientras el live este encendido.
+volver|<- Volver al menu principal    |
+EOF
+)
+    [ -z "$SEL" ] && return
+    local ID=$(echo "$SEL" | cut -d'|' -f1)
+
+    case $ID in
+        esptool)
+            ask "Puerto" "/dev/ttyUSB0"
+            run_pager "esptool --port $REPLY_VAR chip_id" esptool --port "$REPLY_VAR" chip_id
+            ;;
+        avrdude) run_pager "avrdude -?" avrdude -? ;;
+        minicom) clear; sudo minicom -s ;;
+        picocom)
+            ask "Puerto" ""
+            if [ -n "$REPLY_VAR" ]; then
+                local PORT="$REPLY_VAR"
+                ask "Baudrate" "115200"
+                clear; sudo picocom -b "$REPLY_VAR" "$PORT"
+            fi
+            ;;
+        screen)
+            ask "Puerto" ""
+            if [ -n "$REPLY_VAR" ]; then
+                local PORT="$REPLY_VAR"
+                ask "Baudrate" "115200"
+                clear; sudo screen "$PORT" "$REPLY_VAR"
+            fi
+            ;;
+        puertos)
+            run "Puertos serie" bash -c 'ls -la /dev/tty* 2>/dev/null | grep -E "USB|ACM|S[0-9]" || echo "(ninguno)"'
+            ;;
+        ssh)
+            ask "IP de la RPi" ""
+            if [ -n "$REPLY_VAR" ]; then
+                local IP="$REPLY_VAR"
+                ask "Usuario" "pi"
+                clear; ssh "$REPLY_VAR@$IP"
+            fi
+            ;;
+        python) clear; python3 ;;
+        pip)
+            ask "Libreria pip" ""
+            [ -n "$REPLY_VAR" ] && run_pager "pip3 install --user $REPLY_VAR" pip3 install --user "$REPLY_VAR"
+            ;;
+        volver) return ;;
+    esac
+    menu_robotica
+}
+
+# === INFO RED ===
+menu_red() {
+    BREADCRUMB="Menu principal > Informacion de red"
+    run_pager "Informacion de red" bash -c '
+        echo "=== Interfaces ==="; ip -brief addr 2>/dev/null
+        echo; echo "=== Rutas ==="; ip route
+        echo; echo "=== DNS ==="; grep -v "^#\|^$" /etc/resolv.conf 2>/dev/null
+        echo; echo "=== IP publica (si hay internet) ==="
+        timeout 3 curl -s ifconfig.io || echo "(sin conexion)"
+    '
+}
+
+# === APAGAR ===
+menu_apagar() {
+    BREADCRUMB="Menú principal > Apagar / Reiniciar"
+    local SEL
+    SEL=$(cat <<'EOF' | fzf_menu "Apagar / Reiniciar" apagar
+poweroff|1. Apagar el equipo      |Cierra todos los programas de forma segura y apaga.
+reboot|2. Reiniciar el equipo   |Apaga y vuelve a encender automaticamente.
+cancel|<- No hacer nada, volver |
+EOF
+)
+    [ -z "$SEL" ] && return
+    case "$(echo "$SEL" | cut -d'|' -f1)" in
+        poweroff) sudo poweroff ;;
+        reboot)   sudo reboot ;;
+    esac
+}
+
+# === MENÚ PRINCIPAL ===
+main() {
+    while true; do
+        BREADCRUMB="Menú principal"
+        local SEL
+        SEL=$(cat <<'EOF' | fzf_menu "Menú principal" inicio
+seguridad|1.  Seguridad y redes        |Herramientas para auditar redes: ver quien esta conectado, escanear puertos, probar contrasenas, analizar trafico. Ideal para aprender hacking etico.|seguridad
+robotica|2.  Robotica y hardware      |Conectar y programar Arduino, ESP32, Raspberry Pi. Abrir Python, monitorizar puertos serie, instalar librerias.|robotica
+red|3.  Ver mi conexion a internet|Muestra que red tienes, tu IP, los DNS y la IP publica que ve el exterior. Util para diagnosticar problemas de internet.|red
+shell|4.  Salir a la consola       |Cierra este menu y abre una terminal normal (bash). Para volver al menu escribe: robomenu|inicio
+apagar|5.  Apagar o reiniciar      |Cierra los programas y apaga o reinicia el equipo de forma segura.|apagar
+EOF
+)
+        [ -z "$SEL" ] && exit 0
+        case "$(echo "$SEL" | cut -d'|' -f1)" in
+            seguridad) menu_seguridad ;;
+            robotica)  menu_robotica ;;
+            red)       menu_red ;;
+            shell)     clear; echo "Saliendo a bash. Vuelve al menú con 'robomenu'."; exec bash ;;
+            apagar)    menu_apagar ;;
+        esac
+    done
+}
+
+# Pantalla de bienvenida la primera vez (cada arranque del menu).
+welcome() {
+    clear
+    cat <<'BANNER'
+
+   PIXELFORGE  ---  UDIT EDITION  ---  v20
+   =========================================
+
+   Bienvenido. Este es el menu principal del live.
+
+   Como funciona:
+     - Usa las FLECHAS arriba y abajo para moverte.
+     - Pulsa ENTER para entrar en una opcion.
+     - Pulsa ESC para volver atras.
+     - A la izquierda veras una imagen que cambia
+       segun la opcion seleccionada.
+     - Abajo veras la DESCRIPCION de cada opcion.
+
+   Si una herramienta abre muchas lineas:
+     - Usa las flechas para subir y bajar.
+     - Pulsa  q  para salir y volver al menu.
+
+   Si te pierdes, pulsa ESC hasta volver aqui.
+
+BANNER
+    printf '   Pulsa ENTER para empezar...'
+    read -r _
+}
+
+# Sanity check
+command -v fzf   >/dev/null 2>&1 || { echo "ERROR: fzf no instalado";   exit 1; }
+command -v chafa >/dev/null 2>&1 || echo  "WARN: chafa no instalado, las imagenes no se mostraran"
+
+welcome
+main
