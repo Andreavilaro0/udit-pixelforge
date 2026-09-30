@@ -1,119 +1,126 @@
-# UDIT PixelForge — Distribución Linux Personalizada
+# UDIT PixelForge — a custom Linux distribution
 
-**Asignatura:** Sistemas Operativos Avanzados  
-**Curso:** 2025–2026  
-**Universidad:** UDIT — Universidad de Diseño, Innovación y Tecnología  
-**Autores:** Andrea Ávila Romero · Iván Herrera González
+**English** · [Español](README.es.md)
 
----
+A live Linux distribution based on **Debian 13 (Trixie) for ARM64**. It boots straight into an XFCE
+desktop with its own pixel-art theme, and it includes an interactive terminal menu (`robomenu`) with
+tools for networking, security, diagnostics and hardware.
 
-## Descripción
+Final project for the **Advanced Operating Systems** course at UDIT (Madrid), 2025–2026.
+**Authors:** Andrea Ávila Romero · Iván Herrera González
 
-Este repositorio contiene el trabajo final de la asignatura. El objetivo era construir una distribución Linux live desde cero, personalizada visualmente y con un conjunto de herramientas de diagnóstico, seguridad y recuperación orientadas a administración de sistemas.
-
-El resultado es **UDIT PixelForge**, una ISO basada en Debian 13 Trixie ARM64 que arranca directamente en un entorno gráfico XFCE con autologin, tema Catppuccin Mocha Blue y estética pixel art propia. Incluye un menú interactivo (`robomenu`) accesible desde cualquier terminal.
+![The robomenu interactive menu running in the live system](evidencias/screenshots/vm-03.png)
 
 ---
 
-## Contenido del repositorio
+## What it is
 
-| Ruta | Descripción |
+- A bootable live ISO (1.2 GB) built by hand from a Debian 13 ARM64 base.
+- XFCE 4.18 desktop with autologin, the Catppuccin Mocha Blue theme and custom pixel-art branding
+  (wallpaper, login screen and Plymouth boot splash).
+- `robomenu`: an interactive menu built with `fzf` and `chafa`. You can open it from any terminal.
+- About 1,660 packages, grouped by category: network analysis, defensive and offensive security,
+  system diagnostics, disk management, data recovery, Wi-Fi and robotics/hardware.
+
+## How we built it
+
+The ISO was built by hand, not with a GUI tool:
+unpack the squashfs → install and configure packages in a `chroot` → repack the squashfs → build the
+ISO with `xorriso`. The project went through 20 versions.
+
+## The hardest problems
+
+These three problems took most of the time. Each one needed us to understand a low-level detail.
+
+1. **The ISO did not boot in Parallels on Apple Silicon.** Cubic creates a 32 MB `efi.img`. With that
+   size, the `Ldsiz` field in the El-Torito boot catalog becomes `0`, and Parallels silently rejects
+   the ISO. **Fix:** we changed the base image and built the ISO directly with `xorriso`, using the
+   `-isohybrid-apm-hfsplus` option.
+2. **Kernel panic at boot.** The squashfs was compressed with xz and the BCJ-arm filter. Tools in user
+   space could extract it, but the squashfs driver in the arm64 kernel 6.12 could not.
+   **Fix:** we rebuilt the squashfs with `zstd` (level 22, 1 MB blocks).
+3. **Package installation stopped halfway.** `apt install` with a list of packages fails completely
+   if one package does not exist (for example, `nikto` and `neofetch` are not in Debian 13).
+   **Fix:** install the packages one by one in a loop and tolerate individual failures.
+
+The full build log, every iteration and every fix are in the project manual:
+[`MANUAL-PROYECTO.pdf`](MANUAL-PROYECTO.pdf) (in Spanish).
+
+---
+
+## Repository contents
+
+| Path | Description |
 |---|---|
-| `MANUAL-PROYECTO.html` | Manual técnico completo: proceso de construcción, errores encontrados y soluciones aplicadas. |
-| `BITACORA-FIXES.md` | Registro cronológico de todas las iteraciones (v8 → v20) con causa y solución de cada problema. |
-| `V20-REPORT.md` | Informe de la ampliación v20: paquetes añadidos, scripts nuevos, incidencias. |
-| `scripts/build_v20.sh` | Pipeline reproducible para construir v20 a partir de v19. |
-| `scripts/build_v20_resume.sh` | Variante tolerante a fallos para el chroot de instalación. |
-| `scripts/build_v20_robomenu_fix.sh` | Rebuild rápido que solo reemplaza el binario robomenu sin tocar paquetes. |
-| `scripts/run_qemu.sh` | Script para probar la ISO en QEMU ARM64. |
-| `scripts/v20-assets/robomenu` | Menú interactivo principal del sistema (fzf + chafa). |
-| `scripts/v20-assets/robosec-banner.sh` | Banner figlet+lolcat que aparece al abrir una TTY. |
-| `scripts/v20-assets/icons/` | Cinco iconos pixel art para el menú (seguridad, robótica, red, inicio, apagar). |
-| `evidencias/screenshots/` | Capturas de pantalla del sistema en funcionamiento. |
-| `evidencias/branding/` | Imágenes del tema visual: wallpapers, Plymouth, login. |
-| `evidencias/iso-sha256-*.txt` | Hashes de integridad de cada versión entregada. |
+| [`MANUAL-PROYECTO.pdf`](MANUAL-PROYECTO.pdf) | Technical manual: build process, log of all iterations (v8 → v20), problems and fixes. |
+| `scripts/build_v20.sh` | Build script for v20 (starts from the v19 image). |
+| `scripts/build_v20_resume.sh` | Variant that tolerates failures during the chroot install step. |
+| `scripts/build_v20_robomenu_fix.sh` | Quick rebuild that only replaces the `robomenu` binary. |
+| `scripts/run_qemu.sh` | Runs the ISO in QEMU (ARM64). |
+| `scripts/v20-assets/robomenu` | The interactive menu (`fzf` + `chafa`). |
+| `scripts/v20-assets/robosec-banner.sh` | Banner (`figlet` + `lolcat`) shown when a TTY opens. |
+| `evidencias/screenshots/` | Screenshots of the running system. |
+| `evidencias/branding/` | Theme assets: wallpapers, Plymouth theme, login screen. |
+| `evidencias/iso-sha256-*.txt` | SHA-256 hashes of every delivered version. |
 
-> Los archivos `.iso` **no están incluidos** en el repositorio por su tamaño (entre 883 MB y 1,2 GB). Los hashes SHA-256 de cada versión están en `evidencias/`.
+The `.iso` files are **not** in the repository because of their size (883 MB to 1.2 GB).
 
----
+## Final version
 
-## Versión final
-
-| Parámetro | Valor |
+| | |
 |---|---|
-| Versión | v20 |
-| Tamaño | 1,2 GB |
-| Base | Debian 13 Trixie ARM64 (libre.debian.net) |
-| Escritorio | XFCE 4.18 · tema Catppuccin Mocha Blue |
-| Paquetes instalados | 1660 (dpkg) |
+| Version | v20 |
+| Size | 1.2 GB |
+| Base | Debian 13 Trixie ARM64 |
+| Desktop | XFCE 4.18, Catppuccin Mocha Blue theme |
+| Installed packages | 1,660 (dpkg) |
 | SHA-256 | `3f8a04a8f1fe6ae5e9962cf555108c669fc7b95f2a28f1aaa97148ef384e612f` |
 
-### Credenciales del sistema live
+## Try it
 
-| Usuario | Contraseña | Grupos |
+**Parallels Desktop (Apple Silicon):** create a new VM from the ISO file, choose
+*Other Linux (ARM64)*, give it 4 cores and 4 GB of RAM, and start it. It boots into XFCE with no
+login. Open a terminal and run `robomenu`.
+
+**QEMU:**
+
+```bash
+./scripts/run_qemu.sh debian-udit-pixelart-arm64-v20-final.iso 2048
+```
+
+**Check the ISO:**
+
+```bash
+echo "3f8a04a8f1fe6ae5e9962cf555108c669fc7b95f2a28f1aaa97148ef384e612f  debian-udit-pixelart-arm64-v20-final.iso" | sha256sum -c
+```
+
+### Default credentials
+
+These are the default users of the live ISO. The ISO is a **lab environment for a university
+course**; these are not credentials for any real system.
+
+| User | Password | Groups |
 |---|---|---|
 | `danielsson` | `root` | sudo, wireshark, audio, video, netdev (autologin) |
 | `user` | `live` | sudo, wireshark |
 | `admin` | `admin` | sudo |
 | `root` | `root` | — |
 
----
+## Included tools
 
-## Cómo probar la ISO
+- **Network analysis:** nmap, masscan, wireshark, tshark, tcpdump, netcat, arp-scan
+- **Defensive security:** lynis, fail2ban, ufw, chkrootkit, rkhunter, clamav, aide
+- **Offensive security (for lab use):** hydra, john, hashcat, aircrack-ng, gobuster, whois
+- **System diagnostics:** htop, btop, glances, lsof, iotop, strace, fastfetch
+- **Disk management:** gparted, smartmontools, testdisk, ddrescue, cryptsetup
+- **Recovery:** chntpw, photorec, safecopy
+- **Wi-Fi:** iw, wavemon, wireless-tools, NetworkManager
+- **Robotics / hardware:** avrdude, minicom, picocom, screen, esptool (pip)
 
-### Parallels Desktop (Apple Silicon)
-
-1. Abrir Parallels → **+** → *Install from image file*
-2. Seleccionar la ISO `debian-udit-pixelart-arm64-v20-final.iso`
-3. Tipo de sistema: **Other Linux (ARM64)**
-4. Recursos recomendados: 4 núcleos, 4 GB de RAM
-5. Iniciar. El sistema arranca directamente en XFCE sin necesidad de login manual.
-6. Para abrir el menú interactivo: abrir una terminal y ejecutar `robomenu`
-
-### QEMU
-
-```bash
-./scripts/run_qemu.sh debian-udit-pixelart-arm64-v20-final.iso 2048
-```
-
-### Verificar integridad
-
-```bash
-echo "3f8a04a8f1fe6ae5e9962cf555108c669fc7b95f2a28f1aaa97148ef384e612f  \
-  debian-udit-pixelart-arm64-v20-final.iso" | sha256sum -c
-```
+The tool list follows the course assignment.
 
 ---
 
-## Herramientas incluidas
+## License
 
-El sistema incorpora herramientas agrupadas por categoría según el enunciado de la práctica:
-
-- **Análisis de red:** nmap, masscan, wireshark, tshark, tcpdump, netcat, arp-scan
-- **Seguridad defensiva:** lynis, fail2ban, ufw, chkrootkit, rkhunter, clamav, aide
-- **Seguridad ofensiva:** hydra, john, hashcat, aircrack-ng, gobuster, whois
-- **Diagnóstico del sistema:** htop, btop, glances, lsof, iotop, strace, fastfetch
-- **Gestión de discos:** gparted, smartmontools, testdisk, ddrescue, cryptsetup
-- **Recuperación:** chntpw, photorec, safecopy
-- **WiFi:** iw, wavemon, wireless-tools, NetworkManager
-- **Robótica / hardware:** avrdude, minicom, picocom, screen, esptool (pip)
-
----
-
-## Proceso de construcción (resumen)
-
-El desarrollo pasó por 20 versiones. Los problemas principales que encontramos fueron:
-
-1. **Cubic no genera ISOs que arranquen en Parallels ARM64.** El `efi.img` que produce Cubic tiene 32 MB, lo que fuerza el campo `Ldsiz` del catálogo El-Torito a `0`. Parallels rechaza silenciosamente cualquier ISO con ese valor. La solución fue cambiar de base a `libre.debian.net` y construir la ISO directamente con `xorriso`, usando el flag `-isohybrid-apm-hfsplus` que Cubic nunca genera.
-
-2. **El squashfs con compresión xz y filtro BCJ-arm produce kernel panic en ARM64.** El driver de squashfs del kernel 6.12 arm64 rechaza bloques generados con ese filtro, aunque `unsquashfs` desde userland los extrae sin problemas. La solución fue recompilar con `zstd` nivel 22 y bloques de 1 MB.
-
-3. **`apt install` sobre una lista de paquetes aborta si uno no existe.** En Debian 13 Trixie no están disponibles `nikto` ni `neofetch`, entre otros. Se resolvió instalando paquete a paquete con un bucle `for` y `set +e` para tolerar fallos individuales.
-
-El detalle completo de cada problema y su solución está en `BITACORA-FIXES.md` y en `MANUAL-PROYECTO.html`.
-
----
-
-## Licencia
-
-Material académico. Uso libre para fines educativos con atribución.
+Academic work. Free to use for educational purposes, with attribution.
